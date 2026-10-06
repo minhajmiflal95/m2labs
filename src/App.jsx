@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowUpRight,
   ArrowDown,
@@ -18,6 +18,10 @@ import {
 import { Enquiry, ProjectDetails } from "./components/Dialogs.jsx";
 import Modal from "./components/Modal.jsx";
 import ScrollStory from "./components/ScrollStory.jsx";
+import ServiceScene from "./components/ServiceScene.jsx";
+import ServiceFlow from "./components/ServiceFlow.jsx";
+import { BrandCube, WelcomeSplash } from "./components/BrandCube.jsx";
+
 import {
   services,
   projects,
@@ -28,99 +32,86 @@ import {
 import { serviceDetails, faqs, audiences } from "./editorial.js";
 
 function Hero({ startProject }) {
-  const ref = useRef(null);
   const quiet = useQuietMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "16%"]);
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.025, 1.1]);
   return (
-    <section className="hero shell" id="home" ref={ref}>
-      <div className="hero-meta">
-        <span>Independent digital studio</span>
-        <span>Ratmalana, Sri Lanka</span>
-      </div>
-      <div className="hero-heading">
+    <section className="hero shell" id="home">
+      <div className="illustrated-hero-copy">
+        <span className="hero-pill">
+          Digital solutions for a brighter tomorrow
+        </span>
         <h1>
-          Better digital.
+          Ideas to Impact.
           <br />
-          <span className="muted">By design.</span>
+          <span>Digital Solutions</span>
+          <br />
+          That Matter.
         </h1>
-        <div className="hero-intro">
-          <span className="small-marker" />
-          <p>
-            Thoughtful websites. Connected systems.
-            <br />A clearer way forward.
-          </p>
-          <p className="hero-description">
-            We’re M² Labs. We bring design, development and digital strategy
-            together to make useful things for people and businesses.
-          </p>
+        <p>
+          We design, develop and support digital solutions that help businesses
+          grow, brands stand out and ideas turn into real-world impact.
+        </p>
+        <div className="hero-buttons">
           <Action onClick={startProject}>Let’s build something</Action>
+          <Action href="#work" secondary>
+            View our work
+          </Action>
         </div>
-      </div>
-      <div className="hero-image-wrap">
-        <motion.img
-          className="hero-image"
-          src="/images/forma.png"
-          width="1200"
-          height="1000"
-          alt="A series of quiet architectural arches, an original study in structure and space"
-          fetchPriority="high"
-          style={quiet ? {} : { y: imageY, scale: imageScale }}
-        />
-        <span className="hero-image-label">SPACE FOR A BETTER IDEA.</span>
-        <a
-          href="#intro"
-          className="hero-scroll"
-          aria-label="Scroll to meet M squared Labs"
-        >
-          <ArrowDown size={20} />
-        </a>
-      </div>
-      <div className="image-caption">
-        <span>A study in structure, space & possibility.</span>
-        <span>Design with a purpose. Build with care.</span>
-      </div>
-    </section>
-  );
-}
-function Manifesto() {
-  const ref = useRef(null);
-  const quiet = useQuietMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start .9", "end .45"],
-  });
-  const opacity = useTransform(scrollYProgress, [0, 1], [0.35, 1]);
-  return (
-    <section className="intro-section section-space shell" id="intro" ref={ref}>
-      <Reveal className="intro-layout">
-        <SectionLabel number="00">The way we see it</SectionLabel>
-        <div>
-          <motion.h2 className="manifesto" style={quiet ? {} : { opacity }}>
-            The best digital work
-            <br />
-            makes life a little simpler.
-            <br />
-            <span className="muted">That’s where we begin.</span>
-          </motion.h2>
-          <div className="intro-copy">
-            <p>
-              A website should make your business easier to understand. An
-              application should make a task easier to do. And the systems
-              behind both should work together.
-            </p>
-            <p>
-              We look at the whole picture, then focus on what will make a
-              meaningful difference. Clear thinking, careful design and
-              practical technology. All from one independent studio.
-            </p>
+        <div className="hero-facts">
+          <div>
+            <strong>9</strong>
+            <span>Connected services</span>
+          </div>
+          <div>
+            <strong>One team.</strong>
+            <span>From idea to launch</span>
+          </div>
+          <div>
+            <strong>Built for you.</strong>
+            <span>Support that stays</span>
           </div>
         </div>
-      </Reveal>
+      </div>
+      <motion.div
+        className="hero-illustration"
+        initial={quiet ? false : { opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <ServiceScene className="hero-image" kind={9} />
+        <span className="hero-handnote">
+          Technology.
+          <br />
+          People.
+          <br />
+          Real impact.
+        </span>
+      </motion.div>
+      <div className="craft-banner">
+        <h2>
+          Crafting
+          <br />
+          what’s next.
+        </h2>
+        <p>
+          Interactive experiences, modern technologies
+          <br /> and human-centred design — that’s M² Labs.
+        </p>
+        <a
+          className="brand-orbit"
+          href="#service-experience"
+          aria-label="Explore M squared Labs services"
+        >
+          <span className="orbit-ring" />
+          <BrandCube />
+        </a>
+        <a className="craft-scroll" href="#service-experience">
+          Scroll
+          <br />
+          Explore
+          <br />
+          Experience <ArrowDown size={25} />
+        </a>
+      </div>
     </section>
   );
 }
@@ -408,7 +399,7 @@ function Questions() {
 function Contact({ startProject }) {
   return (
     <section id="contact" className="contact-section section-space shell">
-      <Reveal>
+      <Reveal className="contact-layout">
         <div className="contact-intro">
           <SectionLabel number="06">A good place to start</SectionLabel>
           <span className="contact-location">
@@ -470,7 +461,111 @@ function Contact({ startProject }) {
     </section>
   );
 }
+function ProcessOverview() {
+  const steps = [
+    [
+      "Discover",
+      "We understand your goals, your audience and what needs to work better.",
+      4,
+    ],
+    [
+      "Plan",
+      "We shape the scope, content and a practical roadmap together.",
+      7,
+    ],
+    [
+      "Build",
+      "We design, develop and refine, with you involved along the way.",
+      0,
+    ],
+    [
+      "Launch & grow",
+      "We deploy, hand over and support your next step forward.",
+      2,
+    ],
+  ];
+  return (
+    <section className="process-overview shell">
+      <Reveal className="catalog-heading">
+        <div>
+          <span className="eyebrow">Our process</span>
+          <h2>How We Work</h2>
+        </div>
+        <p>
+          A clear path from the first conversation
+          <br /> to something that makes a difference.
+        </p>
+        <a href="#approach">
+          Our approach <ArrowRight size={16} />
+        </a>
+      </Reveal>
+      <div className="process-steps">
+        {steps.map(([title, text, kind], i) => (
+          <Reveal delay={i * 0.06} key={title}>
+            <div className="process-art">
+              <ServiceScene kind={kind} decorative />
+              {i < 3 && <ArrowRight className="process-arrow" />}
+            </div>
+            <span className="eyebrow">0{i + 1}</span>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+function TechnologyStrip() {
+  return (
+    <section className="technology-strip shell">
+      <Reveal>
+        <span className="eyebrow">Technology ecosystem</span>
+        <h2>Tools for what comes next.</h2>
+        <p>
+          We choose technology around your project, your team and the way you
+          need to work.
+        </p>
+        <ul>
+          {[
+            "React",
+            "Node.js",
+            "TypeScript",
+            "Python",
+            "PHP",
+            "MySQL",
+            "WordPress",
+            "Microsoft 365",
+            "Figma",
+            "GitHub",
+          ].map((name, i) => (
+            <li key={name}>
+              <span aria-hidden="true">
+                {
+                  [
+                    "{ }",
+                    "JS",
+                    "TS",
+                    "Py",
+                    "php",
+                    "SQL",
+                    "W",
+                    "365",
+                    "Fi",
+                    "git",
+                  ][i]
+                }
+              </span>
+              {name}
+            </li>
+          ))}
+        </ul>
+      </Reveal>
+    </section>
+  );
+}
 function Navigation({ close, startProject }) {
+  const [scene, setScene] = useState(0);
+  const quiet = useQuietMotion();
   return (
     <Modal title="Navigation" onClose={close} className="navigation-modal">
       <Logo />
@@ -483,7 +578,14 @@ function Navigation({ close, startProject }) {
             ["The studio", "studio"],
             ["Contact", "contact"],
           ].map(([title, id], i) => (
-            <a href={`#${id}`} onClick={close} key={id}>
+            <a
+              href={`#${id}`}
+              onClick={close}
+              key={id}
+              onMouseEnter={() => setScene(i)}
+              onFocus={() => setScene(i)}
+              className={scene === i ? "menu-active" : ""}
+            >
               <span>0{i + 1}</span>
               {title}
               <ArrowUpRight weight="light" />
@@ -491,6 +593,28 @@ function Navigation({ close, startProject }) {
           ))}
         </nav>
         <div className="menu-contact">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={scene}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: quiet ? 0 : 0.15 }}
+            >
+              <ServiceScene
+                kind={[0, 6, 1, 9, 3][scene]}
+                label={
+                  [
+                    "Our services: a developer creating software",
+                    "Our approach: connected planning and systems",
+                    "Explorations: a designer exploring layouts",
+                    "The studio: our creative team",
+                    "Contact: making a new connection",
+                  ][scene]
+                }
+              />
+            </motion.div>
+          </AnimatePresence>
           <p>Something on your mind?</p>
           <Action onClick={startProject}>Let’s talk</Action>
           <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
@@ -533,6 +657,7 @@ export default function App() {
   };
   return (
     <MotionPreference.Provider value={motionPaused}>
+      <WelcomeSplash />
       <div className={`site ${motionPaused ? "motion-paused" : ""}`}>
         <a href="#main" className="skip-link">
           Skip to content
@@ -541,14 +666,15 @@ export default function App() {
           <div className="header-inner shell">
             <Logo />
             <nav className="desktop-nav" aria-label="Main navigation">
-              <a href="#services">Services</a>
-              <a href="#approach">Approach</a>
-              <a href="#work">Explorations</a>
-              <a href="#studio">Studio</a>
+              <a href="#home">Home</a>
+              <a href="#service-experience">Services</a>
+              <a href="#approach">Process</a>
+              <a href="#work">Work</a>
+              <a href="#studio">About</a>
             </nav>
             <div className="header-actions">
               <button className="header-contact" onClick={() => startProject()}>
-                Let’s talk <ArrowUpRight size={15} />
+                Get in touch <ArrowUpRight size={15} />
               </button>
               <button
                 className="menu-toggle"
@@ -564,11 +690,13 @@ export default function App() {
         </header>
         <main id="main">
           <Hero startProject={() => startProject()} />
-          <Manifesto />
+          <ServiceFlow startProject={startProject} />
           <Services startProject={startProject} />
+          <ProcessOverview />
           <ScrollStory />
           <Explorations openProject={setProject} />
           <Studio />
+          <TechnologyStrip />
           <Questions />
           <Contact startProject={() => startProject()} />
         </main>

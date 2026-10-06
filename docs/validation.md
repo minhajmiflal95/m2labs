@@ -3,9 +3,9 @@
 Validated on 6 October 2026 in the prepared cloud environment using Node.js 24 and Chromium.
 
 - Production build: `npm run build` succeeded.
-- Browser suite: 11 tests passed, covering content, menu focus and Escape, project filtering, concept dialogs, form validation and downloadable brief contents, FAQ, themes, widths of 320/390/768/1440 pixels, reduced motion, scroll-driven diagram progression, and service enquiry selection.
+- Browser suite: 16 tests passed, covering content, menu focus and Escape, project filtering, concept dialogs, form validation and downloadable brief contents, FAQ, themes, widths of 320/390/768/1440 pixels, reduced motion, scroll-driven diagram progression, service enquiry selection, nine distinct service scenes, mouse preview restoration, focus/arrow-key selection, rapid touch switching, the first-visit intro and interactive cube, and all five illustrated navigation destinations.
 - axe-core WCAG scans passed for the light page, dark page and enquiry dialog, including visible-label/accessibility-name checks.
-- The page remains usable with storage and WebGL unavailable; there is no runtime WebGL dependency or loading gate.
+- The page remains usable with storage and WebGL unavailable; there is no runtime WebGL dependency. A skippable 1.2-second intro runs once per session and is omitted for reduced-motion users or unavailable storage.
 - Desktop and mobile screenshots were inspected. No horizontal overflow, broken images or browser errors were found.
 
 ## Production Lighthouse audit
@@ -19,9 +19,11 @@ Desktop preset against the local production build in headless Chromium. This is 
 | Best practices |   100 |
 | SEO            |   100 |
 
-First contentful paint: 0.5 seconds. Largest contentful paint: 0.7 seconds. Cumulative layout shift: 0.002. Total blocking time: 0 milliseconds.
+First contentful paint: 0.5 seconds. Largest contentful paint: 0.6 seconds. Cumulative layout shift: 0.01. Total blocking time: 50 milliseconds.
 
-The scroll story uses Motion and SVG. Reduced motion or the animation pause control displays a static diagram and unpins the story so all chapters remain readable. Three.js is retained only for offline generation of the original architectural artwork.
+The flow menu uses short opacity/transform transitions, mouse previews and persistent keyboard/touch selection. Arrow keys, Home and End navigate the nine services. Each scene uses original, editable SVG artwork; the reference screenshot is not treated as an extracted vector asset.
+
+The brand cube uses CSS 3D transforms. The scroll story uses Motion and SVG. Reduced motion or the animation pause control displays a static diagram and unpins the story so all chapters remain readable. Three.js is retained only for offline generation of the original architectural artwork.
 
 ## Delivery details
 

@@ -19,7 +19,7 @@ for (const [name, width, height] of [
   await page.goto("http://127.0.0.1:5173", { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: `/tmp/m2-${name}.png` });
-  for (const id of ["approach", "work", "contact"]) {
+  for (const id of ["service-experience", "approach", "work", "contact"]) {
     await page.locator(`#${id}`).scrollIntoViewIfNeeded();
     await page
       .locator(`#${id}`)

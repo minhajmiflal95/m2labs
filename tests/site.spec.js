@@ -15,7 +15,7 @@ test("loads the studio, all service groups and local artwork without runtime err
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Better digital.",
+    "Ideas to Impact.",
   );
   await expect(page.locator(".service-row")).toHaveCount(4);
   await expect(page.locator(".project-card")).toHaveCount(2);
@@ -151,6 +151,20 @@ test("mobile and narrow layouts fit without horizontal overflow", async ({
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
       `overflow at ${width}px`,
+    ).toBe(true);
+    const cardFillsCell = await page
+      .locator(".illustrated-card")
+      .first()
+      .evaluate(
+        (el) =>
+          Math.abs(
+            el.getBoundingClientRect().width -
+              el.parentElement.getBoundingClientRect().width,
+          ) < 2,
+      );
+    expect(
+      cardFillsCell,
+      `service card fills its grid cell at ${width}px`,
     ).toBe(true);
     await page.getByRole("button", { name: "Open menu" }).click();
     await expect(
@@ -296,4 +310,111 @@ test("service disclosures show deliverables and carry the selection into enquiri
   await expect(page.locator("select[name=service]")).toHaveValue(
     "Connected operations",
   );
+});
+
+test("every flow item has distinct artwork and hover restores the selected service", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const tabs = page.getByRole("tab");
+  await expect(tabs).toHaveCount(9);
+  const drawings = new Set();
+  for (let i = 0; i < 9; i++) {
+    await tabs.nth(i).click();
+    await expect(tabs.nth(i)).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator("#flow-panel")).toHaveAttribute(
+      "data-scene",
+      String(i),
+    );
+    const art = page.locator("#flow-panel .service-scene");
+    await expect(art).toHaveCount(1);
+    drawings.add(await art.getAttribute("aria-label"));
+  }
+  expect(drawings.size).toBe(9);
+  await tabs.nth(0).hover();
+  await expect(page.locator("#flow-panel")).toHaveAttribute("data-scene", "0");
+  await page.locator("h1").hover();
+  await expect(page.locator("#flow-panel")).toHaveAttribute("data-scene", "8");
+});
+
+test("flow menu supports focus, arrow keys, and selected enquiries", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const tabs = page.getByRole("tab");
+  await tabs.nth(0).focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(tabs.nth(1)).toBeFocused();
+  await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("End");
+  await expect(tabs.nth(8)).toBeFocused();
+  await page.getByRole("button", { name: "Explore this service" }).click();
+  await expect(page.locator("select[name=service]")).toHaveValue(
+    "Your next breakthrough",
+  );
+});
+
+test("touch selection stays active and rapid switching settles without overflow", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+    reducedMotion: "no-preference",
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  for (const i of [1, 4, 7, 2, 8]) await page.getByRole("tab").nth(i).tap();
+  await expect(page.locator("#flow-panel")).toHaveAttribute("data-scene", "8");
+  await expect(page.locator("#flow-panel .flow-content")).toHaveCount(1);
+  await expect(page.getByRole("tab").nth(8)).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await context.close();
+});
+
+test("intro dismisses automatically, remembers the visit and the cube responds to a pointer", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 1000 },
+    reducedMotion: "no-preference",
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  await expect(
+    page.getByRole("dialog", { name: "Welcome to M² Labs" }),
+  ).toHaveCount(0, { timeout: 5000 });
+  expect(await page.evaluate(() => sessionStorage.getItem("m2-welcomed"))).toBe(
+    "1",
+  );
+  await page.reload();
+  await expect(
+    page.getByRole("dialog", { name: "Welcome to M² Labs" }),
+  ).toHaveCount(0);
+  const cube = page.locator(".brand-orbit .cube-perspective");
+  await cube.hover();
+  await expect(cube).toHaveAttribute("style", /--cube-x/);
+  await context.close();
+});
+
+test("navigation illustrates every focused destination", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open menu" }).click();
+  const menu = page.getByRole("dialog", { name: "Navigation" });
+  const labels = new Set();
+  for (const link of await menu.locator("nav a").all()) {
+    await link.focus();
+    await expect(link).toHaveClass(/menu-active/);
+    await expect(menu.locator(".service-scene")).toHaveCount(1);
+    labels.add(await menu.locator(".service-scene").getAttribute("aria-label"));
+  }
+  expect(labels.size).toBe(5);
 });
