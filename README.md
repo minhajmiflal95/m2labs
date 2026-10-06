@@ -15,13 +15,13 @@ Vite serves the app on port 5173 by default. `npm run build` creates the deploya
 
 ## Included
 
-- Interactive Three.js metallic sculpture and a skippable first-visit loading splash.
+- Minimal editorial layout with oversized typography, warm neutral colours and architectural artwork.
 - Flowing full-screen navigation with native dialog focus management.
-- Scroll reveals, desktop sticky service stacking, and liquid project hover reveals.
-- Four service groups covering all requested offerings.
+- Scroll-triggered reveals, image parallax and a pinned three-chapter SVG story: understand, create, evolve.
+- Four detailed service groups with capabilities, deliverables and audience guidance, plus studio content and FAQs.
 - Filterable studio concepts with project detail dialogs. These are explicitly concept work, not client claims.
 - Validated project brief builder with downloadable text and clipboard support.
-- Light/dark themes, reduced-motion handling, animation pause, and WebGL fallback.
+- Light/dark themes, reduced-motion handling, animation pause, and a readable static scroll-story fallback.
 - Self-hosted fonts and original, locally rendered 3D concept artwork. No third-party image requests at runtime.
 
 ## Contact configuration
@@ -40,9 +40,9 @@ To override the recipient, copy `.env.example` to `.env.local` and set `VITE_CON
 
 - `public/m2-mark.svg` is a vector adaptation of the supplied logo reference, not the original uploaded file. Replace it with the original approved asset when available.
 - Services, project content and the contact configuration are in `src/data.js`.
-- Form and landing-page sections are in `src/App.jsx`.
+- Landing-page sections are in `src/App.jsx`; expanded copy is in `src/editorial.js`; enquiry dialogs are in `src/components/Dialogs.jsx`.
 - Shared visual tokens and responsive styles are in `src/styles.css`.
-- `src/components/Sculpture.jsx` owns the Three.js scene and cleanup.
+- `src/components/ScrollStory.jsx` owns the scroll-linked SVG diagram. Three.js is used only by the artwork generator, not the live page.
 - Project art is original procedural work from `src/artwork.js`; it can be regenerated while the dev server is running with `node scripts/generate-art.mjs`.
 - Replace the two concept studies with verified client work before presenting them as a commercial portfolio. No customer metrics or testimonials have been invented.
 
@@ -53,9 +53,9 @@ npm test
 npm run build
 ```
 
-Detailed results and the software-graphics performance limitation are recorded in [docs/validation.md](docs/validation.md).
+Detailed results and production performance measurements are recorded in [docs/validation.md](docs/validation.md).
 
-Browser tests use Playwright and Chromium (`/usr/bin/chromium` in this cloud environment). Set `CHROMIUM_PATH` for a different executable. Tests cover navigation/focus, concept filters, brief validation and downloads, FAQ, themes, responsive layouts, reduced motion, WebGL fallback and WCAG checks through axe-core.
+Browser tests use Playwright and Chromium (`/usr/bin/chromium` in this cloud environment). Set `CHROMIUM_PATH` for a different executable. Tests cover navigation/focus, concept filters, brief validation and downloads, FAQ, themes, responsive layouts, reduced motion, scroll-linked diagram progression and WCAG checks through axe-core.
 
 `node scripts/check-visuals.mjs` captures desktop and mobile screenshots in `/tmp` while the dev server runs. `npx prettier --write src scripts tests index.html *.js *.json README.md` formats the project.
 

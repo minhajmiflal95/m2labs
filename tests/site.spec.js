@@ -3,7 +3,6 @@ import AxeBuilder from "@axe-core/playwright";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    sessionStorage.setItem("m2-intro-seen", "true");
     localStorage.setItem("m2-theme", "light");
   });
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -16,11 +15,12 @@ test("loads the studio, all service groups and local artwork without runtime err
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Exponentially",
+    "Better digital.",
   );
-  await expect(page.locator(".service-card")).toHaveCount(4);
+  await expect(page.locator(".service-row")).toHaveCount(4);
   await expect(page.locator(".project-card")).toHaveCount(2);
-  await expect(page.locator(".hero-visual canvas")).toHaveCount(1);
+  await expect(page.locator("canvas")).toHaveCount(0);
+  await expect(page.locator(".hero-image")).toBeVisible();
   await page.locator("#work").scrollIntoViewIfNeeded();
   await expect
     .poll(() =>
@@ -160,25 +160,19 @@ test("mobile and narrow layouts fit without horizontal overflow", async ({
   }
 });
 
-test("reduced motion disables perpetual movement and unpins the stack", async ({
+test("reduced motion unpins the story and keeps every chapter readable", async ({
   page,
 }) => {
   await page.goto("/");
+  await expect(page.locator(".story-track")).toHaveClass(/story-quiet/);
   await expect
     .poll(() =>
       page
-        .locator(".capability-track")
-        .evaluate((el) => getComputedStyle(el).animationName),
-    )
-    .toBe("none");
-  await expect
-    .poll(() =>
-      page
-        .locator(".stack-slot")
-        .first()
+        .locator(".story-stage")
         .evaluate((el) => getComputedStyle(el).position),
     )
     .toBe("relative");
+  await expect(page.locator(".story-chapter")).toHaveCount(3);
 });
 
 test("WCAG accessibility scan for landing, form and dark theme", async ({
@@ -209,30 +203,37 @@ test("WCAG accessibility scan for landing, form and dark theme", async ({
   expect(results.violations).toEqual([]);
 });
 
-test("loading splash completes and WebGL failure retains the brand fallback", async ({
+test("the page is immediately usable without WebGL or browser storage", async ({
   browser,
 }) => {
-  const context = await browser.newContext({ reducedMotion: "no-preference" });
+  const context = await browser.newContext({ reducedMotion: "reduce" });
   const page = await context.newPage();
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (type, ...args) {
-      if (type.includes("webgl")) return null;
+      if (type.includes("webgl")) throw new Error("WebGL unavailable");
       return original.call(this, type, ...args);
+    };
+    Storage.prototype.getItem = () => {
+      throw new Error("Storage unavailable");
+    };
+    Storage.prototype.setItem = () => {
+      throw new Error("Storage unavailable");
     };
   });
   await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.getByRole("button", { name: "Let’s build something" }).click();
   await expect(
-    page.getByRole("dialog", { name: "Welcome to M squared Labs" }),
+    page.getByRole("dialog", { name: "Start a project" }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("dialog", { name: "Welcome to M squared Labs" }),
-  ).toHaveCount(0, { timeout: 8000 });
-  await expect(page.locator(".hero-visual .sculpture-fallback")).toBeVisible();
+  expect(errors).toEqual([]);
   await context.close();
 });
 
-test("the 3D sculpture responds to pointer movement and settles when idle", async ({
+test("scrolling advances the story and assembles the diagram", async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -240,24 +241,59 @@ test("the 3D sculpture responds to pointer movement and settles when idle", asyn
     reducedMotion: "no-preference",
   });
   const page = await context.newPage();
-  await page.addInitScript(() =>
-    sessionStorage.setItem("m2-intro-seen", "true"),
-  );
   await page.goto("/");
-  const canvas = page.locator(".hero-visual canvas");
-  await expect(canvas).toBeVisible();
-  await page.waitForTimeout(1000);
-  const resting = await canvas.screenshot();
-  const bounds = await canvas.boundingBox();
-  await page.mouse.move(
-    bounds.x + bounds.width * 0.7,
-    bounds.y + bounds.height * 0.6,
+  await page.evaluate(() => document.fonts.ready);
+  const story = page.locator(".story-track");
+  const position = await story.evaluate((el) => ({
+    top: el.getBoundingClientRect().top + window.scrollY,
+    distance: el.offsetHeight - window.innerHeight,
+  }));
+  await page.evaluate(
+    (top) => window.scrollTo({ top, behavior: "instant" }),
+    position.top,
   );
-  await page.waitForTimeout(1000);
-  const moved = await canvas.screenshot();
-  expect(moved.equals(resting)).toBe(false);
-  await page.waitForTimeout(500);
-  const settled = await canvas.screenshot();
-  expect(settled.equals(moved)).toBe(true);
+  await expect(story).toHaveAttribute("data-story-phase", "0");
+  const initial = await page
+    .locator(".story-tile")
+    .first()
+    .getAttribute("style");
+  await page.evaluate(
+    ({ top, distance }) =>
+      window.scrollTo({ top: top + distance * 0.53, behavior: "instant" }),
+    position,
+  );
+  await expect(story).toHaveAttribute("data-story-phase", "1");
+  await expect
+    .poll(() => page.locator(".story-tile").first().getAttribute("style"))
+    .not.toBe(initial);
+  await page.evaluate(
+    ({ top, distance }) =>
+      window.scrollTo({ top: top + distance * 0.98, behavior: "instant" }),
+    position,
+  );
+  await expect(story).toHaveAttribute("data-story-phase", "2");
+  await expect(page.locator(".diagram-phase")).toContainText("Evolve");
   await context.close();
+});
+
+test("service disclosures show deliverables and carry the selection into enquiries", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const trigger = page.getByRole("button", { name: /Systems & IT support/ });
+  await trigger.click();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#service-content-1")).toContainText(
+    "Microsoft 365",
+  );
+  await expect(page.locator("#service-content-1")).toContainText(
+    "Documentation, handover",
+  );
+  await page
+    .locator("#service-content-1")
+    .getByRole("button", { name: "Let’s talk about your project" })
+    .click();
+  await expect(page.locator("select[name=service]")).toHaveValue(
+    "Connected operations",
+  );
 });

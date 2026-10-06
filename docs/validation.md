@@ -1,31 +1,31 @@
 # Validation
 
-Validated in the prepared cloud environment using Node.js 24.19.0 and Chromium.
+Validated on 6 October 2026 in the prepared cloud environment using Node.js 24 and Chromium.
 
-- Frozen installation: `npm ci --cache /tmp/m2labs-npm-cache --no-audit --no-fund` succeeded.
 - Production build: `npm run build` succeeded.
-- Browser suite: 10 tests passed, covering rendered content, menu focus and Escape, project filtering, concept dialogs, form validation and downloadable brief contents, FAQ, themes, widths of 320/390/768/1440 pixels, reduced motion, loading-splash recovery, WebGL fallback, and actual pointer-driven 3D rendering.
-- axe-core WCAG scans passed for the light page, dark page and enquiry dialog. Project art controls also receive a visible-label/accessibility-name check.
-- Desktop and mobile visual checks performed using real browser screenshots.
+- Browser suite: 11 tests passed, covering content, menu focus and Escape, project filtering, concept dialogs, form validation and downloadable brief contents, FAQ, themes, widths of 320/390/768/1440 pixels, reduced motion, scroll-driven diagram progression, and service enquiry selection.
+- axe-core WCAG scans passed for the light page, dark page and enquiry dialog, including visible-label/accessibility-name checks.
+- The page remains usable with storage and WebGL unavailable; there is no runtime WebGL dependency or loading gate.
+- Desktop and mobile screenshots were inspected. No horizontal overflow, broken images or browser errors were found.
 
 ## Production Lighthouse audit
 
-Desktop preset, Chromium running with SwiftShader software graphics, local production server. This is a lab measurement, not a real-user or mobile-device performance guarantee.
+Desktop preset against the local production build in headless Chromium. This is a lab measurement, not a real-user or mobile-device performance guarantee.
 
 | Category       | Score |
 | -------------- | ----: |
-| Performance    |    61 |
+| Performance    |   100 |
 | Accessibility  |   100 |
 | Best practices |   100 |
 | SEO            |   100 |
 
-First contentful paint: 0.6 seconds. Largest contentful paint: 1.7 seconds. Cumulative layout shift: 0.008. Total blocking time: 1,520 milliseconds.
+First contentful paint: 0.5 seconds. Largest contentful paint: 0.7 seconds. Cumulative layout shift: 0.002. Total blocking time: 0 milliseconds.
 
-The WebGL sculpture now renders on demand and settles after pointer interaction. This reduced measured blocking time from 29,830 to 1,520 milliseconds in the software-rendered environment. GPU initialization remains a performance limitation on software graphics and should be checked on target physical devices before launch. Animations respect reduced motion, and a brand-mark fallback is available when WebGL is unavailable.
+The scroll story uses Motion and SVG. Reduced motion or the animation pause control displays a static diagram and unpins the story so all chapters remain readable. Three.js is retained only for offline generation of the original architectural artwork.
 
-## Before a public launch
+## Delivery details
 
-- Business email, phone, WhatsApp and address are configured from the supplied details. Enquiries open an email addressed to `minhajmiflal95@gmail.com` for the visitor to send; the site does not send automatically.
-- Replace the vector-adapted logo with the original approved asset if exact reproduction is required.
-- Portfolio pieces are explicitly studio concepts. Replace them with verified client work if appropriate; no client outcomes or testimonials are claimed.
-- No website deployment or environment publication has been performed.
+- Business email, phone, WhatsApp and address are configured from the supplied details. Enquiries prepare an email addressed to `minhajmiflal95@gmail.com` for the visitor to send; the site does not send automatically.
+- The logo is a vector adaptation of the supplied reference.
+- Portfolio pieces are explicitly studio concepts; no client outcomes or testimonials are claimed.
+- Pushing source code to GitHub does not deploy the website or publish the cloud environment.
