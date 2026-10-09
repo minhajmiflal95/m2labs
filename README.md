@@ -15,15 +15,15 @@ Vite serves the app on port 5173 by default. `npm run build` creates the deploya
 
 ## Included
 
-- Blue-and-white illustrated layout based on the supplied reference, with original editable SVG artwork.
+- Blue-and-white illustrated layout based on the supplied reference, with the supplied transparent illustrations.
 - Three cinematic hero slides with animated typography, scene reveals, slide progress, previous/next controls, keyboard navigation and touch swipes. Autoplay pauses for hover, focus, hidden tabs and offscreen content; manual selection stops it until resumed. Reduced motion and the site-wide pause disable autoplay.
-- Nine-service flow menu with distinct scenes, hover previews, keyboard selection and touch controls. Full-screen navigation also has five distinct illustrated destinations and native dialog focus management.
+- Nine-service flow menu with context-matched uploaded artwork, hover previews, keyboard selection and touch controls. Full-screen navigation also has five distinct illustrated destinations and native dialog focus management.
 - A short skippable first-visit intro, pointer-responsive CSS 3D brand cube, scroll-triggered reveals, project-image reveals, desktop service stacking and a pinned three-chapter SVG story.
 - Four detailed service groups with capabilities, deliverables and audience guidance, plus studio content and FAQs.
 - Filterable studio concepts with project detail dialogs. These are explicitly concept work, not client claims.
 - Validated project brief builder with downloadable text and clipboard support.
 - Light/dark themes, reduced-motion handling, animation pause, and a readable static scroll-story fallback.
-- Self-hosted fonts and original, locally rendered 3D concept artwork. No third-party image requests at runtime.
+- Self-hosted fonts and original, locally rendered 3D concept artwork. Uploaded illustrations are served locally in three sizes with transparency preserved. No third-party image requests at runtime.
 
 ## Contact configuration
 
@@ -44,7 +44,7 @@ To override the recipient, copy `.env.example` to `.env.local` and set `VITE_CON
 - Landing-page sections are in `src/App.jsx`; expanded copy is in `src/editorial.js`; enquiry dialogs are in `src/components/Dialogs.jsx`.
 - Base styles and dialogs are in `src/styles.css`; the illustrated identity and responsive layouts are in `src/illustrated.css`.
 - `src/components/HeroSlides.jsx` contains hero content and carousel behavior; `src/hero-slides.css` styles its responsive layout.
-- `src/components/ServiceScene.jsx` contains the custom SVG scenes. These recreate the reference’s visual direction; they are not extracted source vectors from the screenshot.
+- `src/components/ServiceScene.jsx` maps the eight uploaded PNG illustrations to each section using responsive WebP assets. See [artwork provenance and placement](docs/illustrations.md).
 - `src/components/ServiceFlow.jsx` contains all nine offerings and the preview/selection logic. Hover previews are temporary; keyboard focus and touch/click commit selection.
 - `src/components/BrandCube.jsx` contains the six-face CSS 3D cube and 1.2-second, once-per-session intro. Reduced-motion users skip the intro; storage failure leaves the site immediately usable.
 - `src/components/ScrollStory.jsx` owns the scroll-linked SVG diagram. Three.js is used only by the artwork generator, not the live page.

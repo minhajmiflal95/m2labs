@@ -1,5 +1,15 @@
 # Validation
 
+## Uploaded artwork — 9 October 2026
+
+- Production build and all 20 browser tests passed, including image-loading and section-mapping checks.
+
+- Integrated all eight illustrations from `vecotrs.rar` throughout the hero, services, process, work introduction, studio, technology, FAQ and contact sections.
+- Generated 480/960/1448-pixel WebP derivatives, preserving transparency; all 24 files total approximately 4.1 MB, while each browser downloads the appropriate size.
+- Desktop and mobile screenshot checks found no broken images, browser errors or horizontal overflow.
+- The project concept images and animated SVG story diagram remain; uploaded illustrations accompany them. Asset provenance and placement are documented in [illustrations.md](illustrations.md).
+- Earlier Lighthouse scores below predate the uploaded images and are not measurements of this update.
+
 ## Cinematic hero update — 9 October 2026
 
 - Production build passed.

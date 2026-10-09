@@ -184,6 +184,7 @@ export default function HeroSlides({ startProject }) {
               }}
             >
               <ServiceScene
+                priority
                 className="hero-image"
                 kind={slide.scene}
                 decorative

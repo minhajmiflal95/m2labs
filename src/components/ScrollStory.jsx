@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import ServiceScene from "./ServiceScene.jsx";
 import {
   motion,
   useScroll,
@@ -228,6 +229,11 @@ export default function ScrollStory() {
                   0{i + 1} / {chapter.label}
                 </span>
                 <h3>{chapter.title}</h3>
+                <ServiceScene
+                  kind={[4, 0, 5][i]}
+                  className="chapter-illustration"
+                  decorative
+                />
                 <p className="chapter-lead">{chapter.text}</p>
                 <p>{chapter.detail}</p>
                 <ul>

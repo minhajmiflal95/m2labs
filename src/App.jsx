@@ -115,6 +115,11 @@ function Services({ startProject }) {
                 hidden={open !== i}
               >
                 <div className="service-overview">
+                  <ServiceScene
+                    kind={[1, 5, 3, 8][i]}
+                    className="capability-illustration"
+                    decorative
+                  />
                   <h4>{detail.summary}</h4>
                   <p>{detail.detail}</p>
                   <p className="service-fit">
@@ -163,6 +168,7 @@ function Explorations({ openProject }) {
       <Reveal className="split-heading">
         <div>
           <SectionLabel number="03">Notes from the lab</SectionLabel>
+          <ServiceScene kind={1} className="work-illustration" decorative />
           <p className="section-aside">
             A place to test ideas.
             <br />
@@ -263,9 +269,7 @@ function Studio() {
       </Reveal>
       <div className="audience-layout">
         <Reveal className="studio-note">
-          <span className="studio-monogram" aria-hidden="true">
-            m<sup>2</sup>
-          </span>
+          <ServiceScene kind={8} className="studio-illustration" decorative />
           <h3>
             Based in Ratmalana.
             <br />
@@ -318,6 +322,7 @@ function Questions() {
               We’re easy to reach.
             </a>
           </p>
+          <ServiceScene kind={4} className="faq-illustration" decorative />
         </div>
         <div className="faq-list">
           {faqs.map(([q, a], i) => (
@@ -359,19 +364,13 @@ function Contact({ startProject }) {
             </span>
           </span>
         </div>
+        <ServiceScene kind={8} className="contact-illustration" decorative />
         <div className="contact-heading">
           <h2>
             Let’s make
             <br />
             <span className="muted">something useful.</span>
           </h2>
-          <button
-            className="contact-arrow"
-            onClick={startProject}
-            aria-label="Start a project"
-          >
-            <ArrowUpRight size={66} weight="light" />
-          </button>
         </div>
         <div className="contact-lead">
           <p>
@@ -469,6 +468,7 @@ function TechnologyStrip() {
   return (
     <section className="technology-strip shell">
       <Reveal>
+        <ServiceScene kind={5} className="technology-illustration" decorative />
         <span className="eyebrow">Technology ecosystem</span>
         <h2>Tools for what comes next.</h2>
         <p>

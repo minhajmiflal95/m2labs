@@ -312,7 +312,7 @@ test("service disclosures show deliverables and carry the selection into enquiri
   );
 });
 
-test("every flow item has distinct artwork and hover restores the selected service", async ({
+test("every flow item has contextual artwork and hover restores the selected service", async ({
   page,
 }) => {
   await page.goto("/");
@@ -507,4 +507,38 @@ test("hero responds to a horizontal touch swipe without horizontal overflow", as
     ),
   ).toBe(true);
   await context.close();
+});
+
+test("supplied artwork is mapped across sections and responsive images load", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const assets = await page
+    .locator("img.service-scene")
+    .evaluateAll((images) => [
+      ...new Set(images.map((img) => img.getAttribute("src"))),
+    ]);
+  expect(assets).toHaveLength(8);
+  for (const section of [
+    "#home",
+    "#service-experience",
+    "#services",
+    "#approach",
+    "#work",
+    "#studio",
+    ".technology-strip",
+    "#questions",
+    "#contact",
+  ]) {
+    const art = page.locator(`${section} img.service-scene`).first();
+    await art.scrollIntoViewIfNeeded();
+    await expect(art).toBeVisible();
+    await expect
+      .poll(() => art.evaluate((img) => img.complete && img.naturalWidth > 0))
+      .toBe(true);
+    await expect(art).toHaveAttribute(
+      "srcset",
+      /480.webp 480w.*960.webp 960w.*1448.webp 1448w/,
+    );
+  }
 });
