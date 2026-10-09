@@ -8,6 +8,7 @@ import "@fontsource/dm-sans/latin-500.css";
 import App from "./App.jsx";
 import "./styles.css";
 import "./illustrated.css";
+import "./hero-slides.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>

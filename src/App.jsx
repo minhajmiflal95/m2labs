@@ -20,6 +20,7 @@ import Modal from "./components/Modal.jsx";
 import ScrollStory from "./components/ScrollStory.jsx";
 import ServiceScene from "./components/ServiceScene.jsx";
 import ServiceFlow from "./components/ServiceFlow.jsx";
+import HeroSlides from "./components/HeroSlides.jsx";
 import { BrandCube, WelcomeSplash } from "./components/BrandCube.jsx";
 
 import {
@@ -32,60 +33,9 @@ import {
 import { serviceDetails, faqs, audiences } from "./editorial.js";
 
 function Hero({ startProject }) {
-  const quiet = useQuietMotion();
   return (
     <section className="hero shell" id="home">
-      <div className="illustrated-hero-copy">
-        <span className="hero-pill">
-          Digital solutions for a brighter tomorrow
-        </span>
-        <h1>
-          Ideas to Impact.
-          <br />
-          <span>Digital Solutions</span>
-          <br />
-          That Matter.
-        </h1>
-        <p>
-          We design, develop and support digital solutions that help businesses
-          grow, brands stand out and ideas turn into real-world impact.
-        </p>
-        <div className="hero-buttons">
-          <Action onClick={startProject}>Let’s build something</Action>
-          <Action href="#work" secondary>
-            View our work
-          </Action>
-        </div>
-        <div className="hero-facts">
-          <div>
-            <strong>9</strong>
-            <span>Connected services</span>
-          </div>
-          <div>
-            <strong>One team.</strong>
-            <span>From idea to launch</span>
-          </div>
-          <div>
-            <strong>Built for you.</strong>
-            <span>Support that stays</span>
-          </div>
-        </div>
-      </div>
-      <motion.div
-        className="hero-illustration"
-        initial={quiet ? false : { opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <ServiceScene className="hero-image" kind={9} />
-        <span className="hero-handnote">
-          Technology.
-          <br />
-          People.
-          <br />
-          Real impact.
-        </span>
-      </motion.div>
+      <HeroSlides startProject={startProject} />
       <div className="craft-banner">
         <h2>
           Crafting

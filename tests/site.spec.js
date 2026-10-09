@@ -418,3 +418,93 @@ test("navigation illustrates every focused destination", async ({ page }) => {
   }
   expect(labels.size).toBe(5);
 });
+
+test("cinematic hero controls wrap, support keyboard navigation and keep the enquiry available", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const hero = page.getByRole("region", { name: "M² Labs highlights" });
+  await expect(hero).toHaveAttribute("data-slide", "0");
+  await hero.getByRole("button", { name: "Next hero slide" }).click();
+  await expect(hero).toHaveAttribute("data-slide", "1");
+  await expect(hero.getByRole("heading", { level: 1 })).toContainText(
+    "Built Around You.",
+  );
+  await page.keyboard.press("ArrowRight");
+  await expect(hero).toHaveAttribute("data-slide", "2");
+  await hero.getByRole("button", { name: "Next hero slide" }).click();
+  await expect(hero).toHaveAttribute("data-slide", "0");
+  await hero.getByRole("button", { name: "Previous hero slide" }).click();
+  await expect(hero).toHaveAttribute("data-slide", "2");
+  await expect(
+    hero.getByRole("button", { name: /Show slide 3/ }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    hero.getByRole("button", { name: /Play hero slides|Pause hero slides/ }),
+  ).toHaveCount(0);
+  await hero.getByRole("button", { name: "Let’s build something" }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Start a project" }),
+  ).toBeVisible();
+});
+
+test("hero autoplay advances and stops after manual selection", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 1000 },
+    reducedMotion: "no-preference",
+  });
+  const page = await context.newPage();
+  await page.addInitScript(() => sessionStorage.setItem("m2-welcomed", "1"));
+  await page.goto("/");
+  const hero = page.locator(".hero-cinema");
+  await expect(hero).toHaveClass(/is-playing/);
+  await expect(hero).toHaveAttribute("data-slide", "1", { timeout: 10000 });
+  await hero.getByRole("button", { name: /Show slide 3/ }).click();
+  await expect(hero).toHaveAttribute("data-slide", "2");
+  await expect(
+    hero.getByRole("button", { name: "Play hero slides" }),
+  ).toBeVisible();
+  await page.locator(".logo").first().focus();
+  await page.mouse.move(0, 0);
+  await expect(hero).not.toHaveClass(/is-playing/);
+  await context.close();
+});
+
+test("hero responds to a horizontal touch swipe without horizontal overflow", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+    reducedMotion: "reduce",
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  const stage = page.locator(".cinema-art");
+  await stage.scrollIntoViewIfNeeded();
+  const box = await stage.boundingBox();
+  const session = await context.newCDPSession(page);
+  const y = box.y + box.height / 2;
+  await session.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x: box.x + box.width * 0.8, y }],
+  });
+  await session.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [{ x: box.x + box.width * 0.2, y }],
+  });
+  await session.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  await expect(page.locator(".hero-cinema")).toHaveAttribute("data-slide", "1");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await context.close();
+});
