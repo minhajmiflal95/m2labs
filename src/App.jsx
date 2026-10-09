@@ -477,33 +477,27 @@ function TechnologyStrip() {
         </p>
         <ul>
           {[
-            "React",
-            "Node.js",
-            "TypeScript",
-            "Python",
-            "PHP",
-            "MySQL",
-            "WordPress",
-            "Microsoft 365",
-            "Figma",
-            "GitHub",
-          ].map((name, i) => (
+            ["React", "react"],
+            ["Node.js", "nodejs"],
+            ["TypeScript", "typescript"],
+            ["Python", "python"],
+            ["PHP", "php"],
+            ["MySQL", "mysql"],
+            ["WordPress", "wordpress"],
+            ["Microsoft 365", "microsoft365"],
+            ["Figma", "figma"],
+            ["GitHub", "github"],
+          ].map(([name, icon]) => (
             <li key={name}>
-              <span aria-hidden="true">
-                {
-                  [
-                    "{ }",
-                    "JS",
-                    "TS",
-                    "Py",
-                    "php",
-                    "SQL",
-                    "W",
-                    "365",
-                    "Fi",
-                    "git",
-                  ][i]
-                }
+              <span className="technology-logo" aria-hidden="true">
+                <img
+                  src={`/images/technologies/${icon}.svg`}
+                  width="36"
+                  height="36"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
               </span>
               {name}
             </li>
