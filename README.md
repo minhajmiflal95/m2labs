@@ -22,7 +22,7 @@ Vite serves the app on port 5173 by default. `npm run build` creates the deploya
 - Four detailed service groups with capabilities, deliverables and audience guidance, plus studio content and FAQs.
 - Filterable studio concepts with project detail dialogs. These are explicitly concept work, not client claims.
 - Validated project brief builder with downloadable text and clipboard support.
-- Light/dark themes, reduced-motion handling, animation pause, and a readable static scroll-story fallback.
+- Header light/dark toggle with saved preferences, a complete neumorphic light theme, smooth theme transitions, reduced-motion handling, animation pause, and a readable static scroll-story fallback.
 - Self-hosted fonts and original, locally rendered 3D concept artwork. Uploaded illustrations are served locally in three sizes with transparency preserved. No third-party image requests at runtime.
 
 ## Contact configuration
@@ -42,11 +42,12 @@ To override the recipient, copy `.env.example` to `.env.local` and set `VITE_CON
 - `public/m2-mark.svg` is a vector adaptation of the supplied logo reference, not the original uploaded file. Replace it with the original approved asset when available.
 - Services, project content and the contact configuration are in `src/data.js`.
 - Landing-page sections are in `src/App.jsx`; expanded copy is in `src/editorial.js`; enquiry dialogs are in `src/components/Dialogs.jsx`.
+- `src/neumorphic.css` styles the light theme, mobile refinements and fullscreen cinematic intro.
 - Base styles and dialogs are in `src/styles.css`; the illustrated identity and responsive layouts are in `src/illustrated.css`.
 - `src/components/HeroSlides.jsx` contains hero content and carousel behavior; `src/hero-slides.css` styles its responsive layout.
 - `src/components/ServiceScene.jsx` maps the eight uploaded PNG illustrations to each section using responsive WebP assets. See [artwork provenance and placement](docs/illustrations.md).
 - `src/components/ServiceFlow.jsx` contains all nine offerings and the preview/selection logic. Hover previews are temporary; keyboard focus and touch/click commit selection.
-- `src/components/BrandCube.jsx` contains the six-face CSS 3D cube and 1.2-second, once-per-session intro. Reduced-motion users skip the intro; storage failure leaves the site immediately usable.
+- `src/components/BrandCube.jsx` contains the six-face CSS 3D cube and 2.1-second, once-per-session cinematic intro with a 0.35-second exit. Reduced-motion users skip the intro; storage failure leaves the site immediately usable.
 - `src/components/ScrollStory.jsx` owns the scroll-linked SVG diagram. Three.js is used only by the artwork generator, not the live page.
 - Project art is original procedural work from `src/artwork.js`; it can be regenerated while the dev server is running with `node scripts/generate-art.mjs`.
 - Replace the two concept studies with verified client work before presenting them as a commercial portfolio. No customer metrics or testimonials have been invented.

@@ -1,5 +1,12 @@
 # Validation
 
+## Responsive themes and cinematic intro — 9 October 2026
+
+- Added a persistent header theme toggle, a complete neumorphic light material for surfaces and controls, and smooth colour/shadow transitions.
+- Refined 320/390/768-pixel layouts, touch target sizes, menu/form layouts and service artwork placement.
+- Added a fullscreen cinematic cube intro with immediate skip, automatic dismissal after 2.1 seconds plus a 0.35-second exit, and reduced-motion/storage fallbacks.
+- Production build and all 23 browser checks passed across the existing suite and targeted runs, including WCAG in both themes, persistence, recessed form controls, mobile dialogs and immediate intro skip.
+
 ## Uploaded artwork — 9 October 2026
 
 - Production build and all 20 browser tests passed, including image-loading and section-mapping checks.

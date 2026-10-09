@@ -9,6 +9,7 @@ import App from "./App.jsx";
 import "./styles.css";
 import "./illustrated.css";
 import "./hero-slides.css";
+import "./neumorphic.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>

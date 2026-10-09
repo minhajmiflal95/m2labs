@@ -6,6 +6,8 @@ import {
   Plus,
   Minus,
   ArrowRight,
+  Sun,
+  Moon,
 } from "@phosphor-icons/react";
 import {
   Action,
@@ -617,6 +619,14 @@ export default function App() {
               <a href="#studio">About</a>
             </nav>
             <div className="header-actions">
+              <button
+                className="theme-toggle"
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+                aria-pressed={theme === "light"}
+              >
+                {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+              </button>
               <button className="header-contact" onClick={() => startProject()}>
                 Get in touch <ArrowUpRight size={15} />
               </button>
@@ -658,12 +668,6 @@ export default function App() {
             <div className="footer-settings">
               <button onClick={() => setMotionPaused(!motionPaused)}>
                 {motionPaused ? "Resume animation" : "Pause animation"}
-              </button>
-              <button
-                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-              >
-                {theme === "light" ? "Dark mode" : "Light mode"}
               </button>
             </div>
           </div>

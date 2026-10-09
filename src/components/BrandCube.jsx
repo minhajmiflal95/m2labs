@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Modal from "./Modal.jsx";
 import { useQuietMotion } from "./UI.jsx";
 
@@ -53,28 +53,52 @@ export function WelcomeSplash() {
       return false;
     }
   });
-  const close = () => {
-    setOpen(false);
+  const [leaving, setLeaving] = useState(false);
+  const close = useCallback(() => {
+    setLeaving(true);
     try {
       sessionStorage.setItem("m2-welcomed", "1");
     } catch {
       /* Optional visit memory. */
     }
-  };
+  }, []);
   useEffect(() => {
     if (!open) return;
-    const timeout = setTimeout(close, 1200);
+    const timeout = setTimeout(close, 2100);
     return () => clearTimeout(timeout);
-  }, [open]);
+  }, [open, close]);
+  useEffect(() => {
+    if (!leaving) return;
+    const timeout = setTimeout(() => setOpen(false), 350);
+    return () => clearTimeout(timeout);
+  }, [leaving]);
   if (!open || quiet) return null;
   return (
     <Modal
       title="Welcome to M² Labs"
       onClose={close}
-      className="welcome-splash"
+      className={`welcome-splash cinematic-loading ${leaving ? "is-leaving" : ""}`}
     >
-      <BrandCube />
-      <p>Ideas taking shape.</p>
+      <div className="loading-frame" aria-hidden="true">
+        <span>M² LABS / CREATIVE TECHNOLOGY</span>
+        <span>RATMALANA · SRI LANKA</span>
+      </div>
+      <div className="loading-orbits" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <div className="loading-cube">
+        <BrandCube />
+      </div>
+      <div className="loading-title">
+        <span className="eyebrow">From possibility to progress</span>
+        <p>Ideas taking shape.</p>
+        <span className="loading-subtitle">Design. Develop. Connect.</span>
+      </div>
+      <div className="loading-line" aria-hidden="true">
+        <span />
+      </div>
       <button className="text-link" onClick={close}>
         Skip intro
       </button>

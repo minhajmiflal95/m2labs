@@ -542,3 +542,97 @@ test("supplied artwork is mapped across sections and responsive images load", as
     );
   }
 });
+
+test("header theme toggle persists and light mode styles cards and form controls", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    baseURL: "http://127.0.0.1:5173",
+    reducedMotion: "reduce",
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  const toggle = page.getByRole("button", { name: "Switch to light mode" });
+  await expect(toggle).toBeVisible();
+  await toggle.click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect
+    .poll(() =>
+      page
+        .locator(".illustrated-card")
+        .first()
+        .evaluate((el) => getComputedStyle(el).boxShadow),
+    )
+    .not.toBe("none");
+  await page.getByRole("button", { name: "Let’s build something" }).click();
+  const form = page.getByRole("dialog", { name: "Start a project" });
+  await expect(form).toBeVisible();
+  await expect
+    .poll(() =>
+      form
+        .locator("input")
+        .first()
+        .evaluate((el) => getComputedStyle(el).boxShadow),
+    )
+    .toContain("inset");
+  await context.close();
+});
+
+test("mobile controls and dialogs fit in both themes", async ({ page }) => {
+  for (const width of [320, 390, 768]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+    for (const theme of ["dark", "light"]) {
+      await page
+        .getByRole("button", { name: `Switch to ${theme} mode` })
+        .click();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      const toggle = page.locator(".theme-toggle");
+      const box = await toggle.boundingBox();
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      await page.getByRole("button", { name: "Open menu" }).click();
+      const menu = page.getByRole("dialog", { name: "Navigation" });
+      await expect(menu).toBeVisible();
+      expect(
+        await menu.evaluate((el) => el.scrollWidth <= el.clientWidth),
+      ).toBe(true);
+      await page.keyboard.press("Escape");
+    }
+  }
+});
+
+test("cinematic intro can be skipped immediately and is omitted for reduced motion", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    reducedMotion: "no-preference",
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  const intro = page.getByRole("dialog", { name: "Welcome to M² Labs" });
+  await expect(intro).toBeVisible();
+  await intro.getByRole("button", { name: "Skip intro" }).click();
+  await expect(intro).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await context.close();
+  const reduced = await browser.newContext({ reducedMotion: "reduce" });
+  const quietPage = await reduced.newPage();
+  await quietPage.goto("/");
+  await expect(
+    quietPage.getByRole("dialog", { name: "Welcome to M² Labs" }),
+  ).toHaveCount(0);
+  await reduced.close();
+});
