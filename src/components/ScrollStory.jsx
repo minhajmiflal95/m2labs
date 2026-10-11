@@ -1,249 +1,365 @@
-import { useRef, useState } from "react";
-import ServiceScene from "./ServiceScene.jsx";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useMotionValueEvent,
-} from "motion/react";
-import { Reveal, SectionLabel, useQuietMotion } from "./UI.jsx";
+import { useLayoutEffect, useRef, useState } from "react";
+import { useQuietMotion } from "./UI.jsx";
 
-const chapters = [
+const scenes = [
   {
-    title: "First, find the focus.",
-    label: "Understand",
-    text: "Before a screen, a line of code, or a campaign, there is a question: what needs to work better?",
-    detail:
-      "We get to know your audience, your day-to-day work and the problem behind the brief. Together, we decide what matters now and what can wait.",
-    outputs: [
-      "A shared understanding of the challenge",
-      "A clear scope, priorities and project plan",
-      "The right tools for the job",
-    ],
+    name: "Spark",
+    title: "Every big idea starts with a spark.",
+    text: "One question. One possibility. A new direction waiting to happen.",
   },
   {
-    title: "Then, give it form.",
-    label: "Create",
-    text: "Make the complex feel simple. Build something people can understand, use and enjoy.",
-    detail:
-      "Strategy becomes structure, content and working software. We design in context, develop in stages and share progress so your feedback shapes the result.",
-    outputs: [
-      "Purposeful design and useful content",
-      "Responsive development and integrations",
-      "Testing, refinement and a considered launch",
-    ],
+    name: "Imagination",
+    title: "Imagination becomes possibility.",
+    text: "We connect curiosity with strategy, giving your idea room to become something extraordinary.",
   },
   {
-    title: "Keep the good going.",
-    label: "Evolve",
-    text: "A launch is a beginning. Your digital tools should keep moving with your business.",
-    detail:
-      "From technical support and connected systems to search and social content, we help you look after what you have built and decide what comes next.",
-    outputs: [
-      "A practical handover and documentation",
-      "Ongoing support, scoped around your needs",
-      "A direction for the next improvement",
-    ],
+    name: "Creation",
+    title: "We turn ideas into digital experiences.",
+    text: "Purposeful websites. Powerful applications. Connected systems. Built around the people who use them.",
+  },
+  {
+    name: "Reveal",
+    title: "Your vision. Our universe.",
+    text: "Design, technology and ongoing support — brought together by M² Labs.",
   },
 ];
-const scattered = [
-  [-4, 28],
-  [203, -8],
-  [356, 53],
-  [100, 131],
-  [272, 160],
-  [-11, 212],
-  [368, 243],
-  [172, 273],
-  [294, 337],
-];
-function Tile({ index, progress, quiet }) {
-  const col = index % 3,
-    row = Math.floor(index / 3);
-  const x = useTransform(
-    progress,
-    [0, 0.48, 1],
-    [scattered[index][0], 112 + col * 77, 124 + col * 70],
-  );
-  const y = useTransform(
-    progress,
-    [0, 0.48, 1],
-    [scattered[index][1], 90 + row * 77, 109 + row * 70],
-  );
-  const rotate = useTransform(
-    progress,
-    [0, 0.48, 1],
-    [(index % 2 ? 1 : -1) * (9 + index), 0, 0],
-  );
-  const fill = useTransform(
-    progress,
-    [0, 0.55, 1],
-    [
-      "var(--paper)",
-      "var(--paper)",
-      index === 4 ? "var(--accent)" : "var(--tile)",
-    ],
-  );
+
+function Energy({ ribbon = false }) {
   return (
-    <motion.g
-      className="story-tile"
-      style={
-        quiet ? { x: 124 + col * 70, y: 109 + row * 70 } : { x, y, rotate }
-      }
+    <svg
+      className={`odyssey-energy ${ribbon ? "is-ribbon" : ""}`}
+      viewBox="0 0 1000 600"
+      aria-hidden="true"
     >
-      <motion.rect
-        width="62"
-        height="62"
-        rx="1"
-        fill={quiet ? (index === 4 ? "var(--accent)" : "var(--tile)") : fill}
-        stroke="var(--diagram-line)"
-        strokeWidth="1"
-      />
-      <text
-        x="10"
-        y="18"
-        fill={quiet && index === 4 ? "white" : "var(--ink)"}
-        fontSize="8"
-        fontFamily="monospace"
-      >
-        0{index + 1}
-      </text>
-      {index === 4 && (
-        <text
-          x="19"
-          y="44"
-          fill="var(--paper)"
-          fontFamily="sans-serif"
-          fontSize="24"
-        >
-          m²
-        </text>
-      )}
-    </motion.g>
+      <defs>
+        <linearGradient id={ribbon ? "ribbon-spectrum" : "spark-spectrum"}>
+          <stop stopColor="#a58aff" />
+          <stop offset=".35" stopColor="#57e5ff" />
+          <stop offset=".65" stopColor="#ff8cb1" />
+          <stop offset="1" stopColor="#ffc674" />
+        </linearGradient>
+      </defs>
+      {[0, 1, 2].map((i) => (
+        <path
+          key={i}
+          className="energy-path"
+          d={
+            ribbon
+              ? `M-100 ${390 + i * 15} C160 -160 310 760 510 260 S780 40 1100 300`
+              : `M180 ${300 + i * 12} C300 80 700 80 820 300 C700 520 300 520 180 ${300 + i * 12}`
+          }
+          fill="none"
+          stroke={`url(#${ribbon ? "ribbon-spectrum" : "spark-spectrum"})`}
+          strokeWidth={ribbon ? 18 - i * 5 : 1.5}
+        />
+      ))}
+    </svg>
+  );
+}
+function Interfaces() {
+  return (
+    <div className="odyssey-interfaces" aria-hidden="true">
+      <svg className="odyssey-connections" viewBox="0 0 800 500">
+        <path d="M100 100 Q400 20 640 150 M100 100 Q200 440 400 330 M640 150 Q700 420 400 330" />
+      </svg>
+      <div className="interface-panel interface-web">
+        <div className="interface-bar">
+          <i />
+          <i />
+          <i />
+          <span>WEB EXPERIENCE</span>
+        </div>
+        <div className="interface-web-body">
+          <span>
+            Ideas,
+            <br />
+            amplified.
+          </span>
+          <div className="interface-orb" />
+          <b>Explore the possibilities</b>
+        </div>
+      </div>
+      <div className="interface-panel interface-app">
+        <div className="interface-bar">
+          <i />
+          <i />
+          <i />
+          <span>SOFTWARE / ERP</span>
+        </div>
+        <div className="interface-dashboard">
+          <div className="interface-sidebar" />
+          <div>
+            <small>Connected workspace</small>
+            <div className="interface-metrics">
+              <i />
+              <i />
+              <i />
+            </div>
+            <div className="interface-chart">
+              {[35, 60, 45, 80, 65, 95].map((h, i) => (
+                <span key={i} style={{ height: `${h}%` }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="interface-node node-cloud">
+        Cloud + Microsoft 365<span>Connected. Wherever you work.</span>
+      </div>
+      <div className="interface-node node-growth">
+        SEO + digital marketing<span>Reach the right people.</span>
+      </div>
+    </div>
   );
 }
 export default function ScrollStory() {
-  const ref = useRef(null);
+  const track = useRef(null);
   const quiet = useQuietMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
-  const [phase, setPhase] = useState(0);
-  useMotionValueEvent(scrollYProgress, "change", (value) => {
-    const next = value < 0.29 ? 0 : value < 0.67 ? 1 : 2;
-    setPhase((previous) => (previous === next ? previous : next));
-  });
-  const frameOpacity = useTransform(scrollYProgress, [0.35, 0.7], [0, 1]);
-  const lineDraw = useTransform(scrollYProgress, [0.6, 0.95], [0, 1]);
+  const [fallback, setFallback] = useState(false);
+  const staticMode = quiet || fallback;
+  useLayoutEffect(() => {
+    if (staticMode) return;
+    let cancelled = false,
+      context,
+      media;
+    const root = track.current;
+    Promise.all([import("gsap"), import("gsap/ScrollTrigger")])
+      .then(([animation, plugin]) => {
+        if (cancelled) return;
+        const gsap = animation.gsap;
+        const { ScrollTrigger } = plugin;
+        gsap.registerPlugin(ScrollTrigger);
+        context = gsap.context(() => {
+          media = gsap.matchMedia();
+          media.add(
+            { desktop: "(min-width: 801px)", mobile: "(max-width: 800px)" },
+            ({ conditions }) => {
+              const frames = gsap.utils.toArray(".odyssey-scene", root);
+              gsap.set(frames, { autoAlpha: 0 });
+              gsap.set(frames[0], { autoAlpha: 1 });
+              const timeline = gsap.timeline({
+                scrollTrigger: {
+                  id: "m2-cinematic-story",
+                  trigger: root,
+                  start: "top 64px",
+                  end: conditions.desktop ? "+=260%" : "bottom bottom",
+                  pin: conditions.desktop,
+                  scrub: 0.45,
+                  invalidateOnRefresh: true,
+                  onRefresh: (self) => {
+                    root.dataset.scrollStart = self.start;
+                    root.dataset.scrollEnd = self.end;
+                    root.dataset.scrollPinned = String(Boolean(self.pin));
+                  },
+                  onUpdate: (self) => {
+                    root.dataset.storyProgress = self.progress.toFixed(3);
+                  },
+                },
+                onUpdate: function () {
+                  root.dataset.storyPhase = Math.min(
+                    3,
+                    Math.floor(this.progress() * 4),
+                  );
+                },
+              });
+              frames.forEach((frame, i) => {
+                const camera = frame.querySelector(".odyssey-camera");
+                const words = frame.querySelectorAll(".odyssey-word");
+                if (i) {
+                  timeline.to(
+                    frames[i - 1],
+                    { autoAlpha: 0, duration: 0.24 },
+                    i - 0.18,
+                  );
+                  timeline.to(
+                    frame,
+                    { autoAlpha: 1, duration: 0.32 },
+                    i - 0.18,
+                  );
+                }
+                timeline.fromTo(
+                  camera,
+                  {
+                    scale: i === 3 ? 1.3 : 0.82,
+                    rotationY: -12,
+                    rotationX: 8,
+                    xPercent: -3,
+                  },
+                  {
+                    scale: i === 3 ? 0.95 : 1.1,
+                    rotationY: 9,
+                    rotationX: -4,
+                    xPercent: 3,
+                    duration: 1.15,
+                    ease: "none",
+                  },
+                  i,
+                );
+                timeline.fromTo(
+                  words,
+                  { yPercent: 105, opacity: 0 },
+                  { yPercent: 0, opacity: 1, stagger: 0.025, duration: 0.22 },
+                  i + 0.05,
+                );
+              });
+              timeline.fromTo(
+                ".spark-core",
+                { scale: 0.4 },
+                { scale: 1.5, duration: 1, ease: "power2.inOut" },
+                0,
+              );
+              timeline.fromTo(
+                ".energy-path",
+                { strokeDasharray: 1800, strokeDashoffset: 1800 },
+                { strokeDashoffset: 0, duration: 2, ease: "none" },
+                0.25,
+              );
+              timeline.to(
+                ".odyssey-return",
+                { opacity: 1, duration: 0.65 },
+                2.95,
+              );
+              timeline.to({}, { duration: 0.25 }, 3.75);
+              root.dataset.scrollTrigger = "attached";
+              document.fonts?.ready.then(() => {
+                if (!cancelled) ScrollTrigger.refresh();
+              });
+              return () => {
+                delete root.dataset.scrollTrigger;
+              };
+            },
+          );
+        }, root);
+      })
+      .catch(() => {
+        if (!cancelled) setFallback(true);
+      });
+    return () => {
+      cancelled = true;
+      media?.revert();
+      context?.revert();
+    };
+  }, [staticMode]);
+  function moveCamera(event) {
+    if (staticMode || event.pointerType !== "mouse") return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty(
+      "--cursor-x",
+      `${((event.clientX - bounds.left) / bounds.width - 0.5) * 5}deg`,
+    );
+    event.currentTarget.style.setProperty(
+      "--cursor-y",
+      `${((event.clientY - bounds.top) / bounds.height - 0.5) * -4}deg`,
+    );
+  }
   return (
-    <section id="approach" className="approach section-space shell">
-      <Reveal className="split-heading">
-        <SectionLabel number="02">A considered approach</SectionLabel>
-        <h2>
-          Good work.
-          <br />
-          <span className="muted">From the inside out.</span>
-        </h2>
-      </Reveal>
+    <section
+      id="approach"
+      className={`cinematic-story ${staticMode ? "odyssey-static" : ""}`}
+      aria-label="From spark to digital experience"
+    >
       <div
-        className={`story-track ${quiet ? "story-quiet" : ""}`}
-        ref={ref}
-        data-story-phase={phase}
+        ref={track}
+        className="story-track odyssey-track"
+        data-story-phase="0"
+        data-story-version="cinematic-v1"
       >
-        <div className="story-stage">
-          <div className="diagram-top">
-            <span>THE ANATOMY OF AN IDEA</span>
-            <span>FIG. 0{phase + 1}</span>
+        <div
+          className="story-stage odyssey-stage"
+          onPointerMove={moveCamera}
+          onPointerLeave={(event) => {
+            event.currentTarget.style.setProperty("--cursor-x", "0deg");
+            event.currentTarget.style.setProperty("--cursor-y", "0deg");
+          }}
+        >
+          <div className="odyssey-return" aria-hidden="true" />
+          <div className="odyssey-topline">
+            <span>M² LABS / A DIGITAL ODYSSEY</span>
+            <span>IDEA → IMPACT</span>
           </div>
-          <svg
-            className="story-diagram"
-            viewBox="-40 -30 540 480"
-            role="img"
-            aria-label="A scattered set of elements comes together into a connected system as you scroll"
-          >
-            <defs>
-              <pattern
-                id="dot-grid"
-                width="22"
-                height="22"
-                patternUnits="userSpaceOnUse"
-              >
-                <circle cx="1" cy="1" r=".65" fill="var(--diagram-line)" />
-              </pattern>
-            </defs>
-            <rect
-              x="-40"
-              y="-30"
-              width="540"
-              height="480"
-              fill="url(#dot-grid)"
-            />
-            <motion.rect
-              x="99"
-              y="84"
-              width="240"
-              height="240"
-              rx="1"
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth="1"
-              strokeDasharray="3 5"
-              style={{ opacity: quiet ? 1 : frameOpacity }}
-            />
-            <motion.path
-              d="M-5 214H95 M344 214H446 M219 8V80 M219 328V400"
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth="1"
-              style={{ pathLength: quiet ? 1 : lineDraw }}
-            />
-            {Array.from({ length: 9 }, (_, i) => (
-              <Tile
-                key={i}
-                index={i}
-                progress={scrollYProgress}
-                quiet={quiet}
-              />
-            ))}
-          </svg>
-          <div className="diagram-caption">
-            <span className="diagram-phase">
-              0{phase + 1} / {chapters[phase].label}
-            </span>
-            <span>Less noise. More direction.</span>
-          </div>
-          <div className="story-progress" aria-hidden="true">
-            <motion.span style={{ scaleX: quiet ? 1 : scrollYProgress }} />
-          </div>
-        </div>
-        <div className="story-chapters">
-          {chapters.map((chapter, i) => (
+          {scenes.map((scene, i) => (
             <article
-              className="story-chapter"
-              id={`chapter-${i + 1}`}
-              key={chapter.label}
+              className={`odyssey-scene odyssey-scene-${i}`}
+              key={scene.name}
+              aria-label={scene.name}
             >
-              <Reveal>
-                <span className="chapter-number">
-                  0{i + 1} / {chapter.label}
+              <div className="odyssey-parallax">
+                <div className="odyssey-camera">
+                  {i === 0 && (
+                    <div className="spark-world" aria-hidden="true">
+                      <div className="spark-core" />
+                      <div className="spark-wave wave-one" />
+                      <div className="spark-wave wave-two" />
+                      <Energy />
+                      {Array.from({ length: 16 }, (_, n) => (
+                        <i
+                          className="spark-particle"
+                          key={n}
+                          style={{
+                            "--particle-angle": `${n * 22.5}deg`,
+                            "--particle-radius": `${90 + (n % 4) * 35}px`,
+                            "--particle-color": [
+                              "#78ecff",
+                              "#b99aff",
+                              "#ffbb80",
+                            ][n % 3],
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  {i === 1 && (
+                    <div className="ribbon-world">
+                      <Energy ribbon />
+                      <div className="glass-shard shard-one" />
+                      <div className="glass-shard shard-two" />
+                    </div>
+                  )}
+                  {i === 2 && <Interfaces />}
+                  {i === 3 && (
+                    <div className="odyssey-brand">
+                      <div className="brand-halo" />
+                      <img src="/m2-mark.svg" alt="" width="160" height="160" />
+                      <span>M² Labs</span>
+                      <small>IDEAS. TECHNOLOGY. REAL IMPACT.</small>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="odyssey-copy">
+                <span className="odyssey-chapter">
+                  0{i + 1} / {scene.name}
                 </span>
-                <h3>{chapter.title}</h3>
-                <ServiceScene
-                  kind={[4, 0, 5][i]}
-                  className="chapter-illustration"
-                  decorative
-                />
-                <p className="chapter-lead">{chapter.text}</p>
-                <p>{chapter.detail}</p>
-                <ul>
-                  {chapter.outputs.map((item) => (
-                    <li key={item}>{item}</li>
+                <h2 aria-label={scene.title}>
+                  {scene.title.split(" ").map((word, n) => (
+                    <span className="odyssey-word-mask" key={n}>
+                      <span className="odyssey-word" aria-hidden="true">
+                        {word}&nbsp;
+                      </span>
+                    </span>
                   ))}
-                </ul>
-              </Reveal>
+                </h2>
+                <p>{scene.text}</p>
+                {i === 3 && (
+                  <a className="odyssey-cta" href="#contact">
+                    Let’s Build Something Extraordinary{" "}
+                    <span aria-hidden="true">→</span>
+                  </a>
+                )}
+              </div>
             </article>
           ))}
+          <div className="odyssey-bottomline" aria-hidden="true">
+            <span>SCROLL TO SHAPE THE STORY</span>
+            <div className="odyssey-scene-markers">
+              {scenes.map((scene, i) => (
+                <span key={scene.name}>
+                  {`0${i + 1}`} {scene.name}
+                </span>
+              ))}
+            </div>
+            <span>↓</span>
+          </div>
         </div>
       </div>
     </section>

@@ -149,19 +149,17 @@ test("mobile and narrow layouts fit without horizontal overflow", async ({
   }
 });
 
-test("reduced motion unpins the story and keeps every chapter readable", async ({
+test("reduced motion keeps all four cinematic scenes readable without pinning", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.locator(".story-track")).toHaveClass(/story-quiet/);
-  await expect
-    .poll(() =>
-      page
-        .locator(".story-stage")
-        .evaluate((el) => getComputedStyle(el).position),
-    )
-    .toBe("relative");
-  await expect(page.locator(".story-chapter")).toHaveCount(3);
+  await expect(page.locator(".cinematic-story")).toHaveClass(/odyssey-static/);
+  await expect(page.locator(".odyssey-scene")).toHaveCount(4);
+  for (const scene of await page.locator(".odyssey-scene").all()) {
+    await scene.scrollIntoViewIfNeeded();
+    await expect(scene.getByRole("heading")).toBeVisible();
+  }
+  await expect(page.locator(".pin-spacer .odyssey-track")).toHaveCount(0);
 });
 
 test("WCAG accessibility scan for landing, form and dark theme", async ({
@@ -222,47 +220,67 @@ test("the page is immediately usable without WebGL or browser storage", async ({
   await context.close();
 });
 
-test("scrolling advances the story and assembles the diagram", async ({
+test("cinematic story attaches a reversible GSAP timeline on desktop and mobile", async ({
   browser,
 }) => {
-  const context = await browser.newContext({
-    viewport: { width: 1440, height: 1000 },
-    reducedMotion: "no-preference",
-  });
-  const page = await context.newPage();
-  await page.goto("/");
-  await page.evaluate(() => document.fonts.ready);
-  const story = page.locator(".story-track");
-  const position = await story.evaluate((el) => ({
-    top: el.getBoundingClientRect().top + window.scrollY,
-    distance: el.offsetHeight - window.innerHeight,
-  }));
-  await page.evaluate(
-    (top) => window.scrollTo({ top, behavior: "instant" }),
-    position.top,
-  );
-  await expect(story).toHaveAttribute("data-story-phase", "0");
-  const initial = await page
-    .locator(".story-tile")
-    .first()
-    .getAttribute("style");
-  await page.evaluate(
-    ({ top, distance }) =>
-      window.scrollTo({ top: top + distance * 0.53, behavior: "instant" }),
-    position,
-  );
-  await expect(story).toHaveAttribute("data-story-phase", "1");
-  await expect
-    .poll(() => page.locator(".story-tile").first().getAttribute("style"))
-    .not.toBe(initial);
-  await page.evaluate(
-    ({ top, distance }) =>
-      window.scrollTo({ top: top + distance * 0.98, behavior: "instant" }),
-    position,
-  );
-  await expect(story).toHaveAttribute("data-story-phase", "2");
-  await expect(page.locator(".diagram-phase")).toContainText("Evolve");
-  await context.close();
+  for (const width of [1440, 768, 375]) {
+    const context = await browser.newContext({
+      viewport: { width, height: 900 },
+      reducedMotion: "no-preference",
+    });
+    await context.addInitScript(() => {
+      localStorage.setItem("m2-theme", "light");
+      sessionStorage.setItem("m2-welcomed", "1");
+    });
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.goto("/");
+    const track = page.locator(".odyssey-track");
+    await expect(track).toHaveAttribute("data-scroll-trigger", "attached");
+    await expect(track).toHaveAttribute("data-scroll-end", /\d/);
+    const trigger = await track.evaluate((el) => ({
+      start: Number(el.dataset.scrollStart),
+      end: Number(el.dataset.scrollEnd),
+      pinned: el.dataset.scrollPinned === "true",
+    }));
+    expect(trigger.pinned).toBe(width > 800);
+    for (const phase of [0, 1, 2, 3, 2, 0, 3]) {
+      await page.evaluate(
+        ({ start, end, phase }) =>
+          window.scrollTo({
+            top:
+              start + (end - start) * (phase === 3 ? 0.96 : phase / 4 + 0.12),
+            behavior: "instant",
+          }),
+        { ...trigger, phase },
+      );
+      await expect(track).toHaveAttribute("data-story-phase", String(phase));
+      await expect(page.locator(`.odyssey-scene-${phase}`)).toBeVisible();
+      await expect
+        .poll(() =>
+          page
+            .locator(`.odyssey-scene-${phase}`)
+            .evaluate((el) => Number(getComputedStyle(el).opacity)),
+        )
+        .toBeGreaterThan(0.95);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      if ([0, 1, 2, 3].includes(phase))
+        await page.screenshot({
+          path: `/tmp/m2-odyssey-${width}-${phase}.png`,
+        });
+    }
+    await page
+      .getByRole("link", { name: "Let’s Build Something Extraordinary" })
+      .click();
+    await expect(page).toHaveURL(/#contact$/);
+    expect(errors).toEqual([]);
+    await context.close();
+  }
 });
 
 test("service disclosures show deliverables and carry the selection into enquiries", async ({
@@ -498,7 +516,6 @@ test("supplied artwork is mapped across sections and responsive images load", as
     "#home",
     "#service-experience",
     "#services",
-    "#approach",
     "#work",
     "#studio",
     ".technology-strip",
