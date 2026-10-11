@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import Modal from "./Modal.jsx";
+import { useRef } from "react";
 import { useQuietMotion } from "./UI.jsx";
 
 export function BrandCube() {
@@ -39,69 +38,5 @@ export function BrandCube() {
         ))}
       </span>
     </span>
-  );
-}
-export function WelcomeSplash() {
-  const quiet = useQuietMotion();
-  const [open, setOpen] = useState(() => {
-    try {
-      return (
-        !matchMedia("(prefers-reduced-motion: reduce)").matches &&
-        !sessionStorage.getItem("m2-welcomed")
-      );
-    } catch {
-      return false;
-    }
-  });
-  const [leaving, setLeaving] = useState(false);
-  const close = useCallback(() => {
-    setLeaving(true);
-    try {
-      sessionStorage.setItem("m2-welcomed", "1");
-    } catch {
-      /* Optional visit memory. */
-    }
-  }, []);
-  useEffect(() => {
-    if (!open) return;
-    const timeout = setTimeout(close, 2100);
-    return () => clearTimeout(timeout);
-  }, [open, close]);
-  useEffect(() => {
-    if (!leaving) return;
-    const timeout = setTimeout(() => setOpen(false), 350);
-    return () => clearTimeout(timeout);
-  }, [leaving]);
-  if (!open || quiet) return null;
-  return (
-    <Modal
-      title="Welcome to M² Labs"
-      onClose={close}
-      className={`welcome-splash cinematic-loading ${leaving ? "is-leaving" : ""}`}
-    >
-      <div className="loading-frame" aria-hidden="true">
-        <span>M² LABS / CREATIVE TECHNOLOGY</span>
-        <span>RATMALANA · SRI LANKA</span>
-      </div>
-      <div className="loading-orbits" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
-      <div className="loading-cube">
-        <BrandCube />
-      </div>
-      <div className="loading-title">
-        <span className="eyebrow">From possibility to progress</span>
-        <p>Ideas taking shape.</p>
-        <span className="loading-subtitle">Design. Develop. Connect.</span>
-      </div>
-      <div className="loading-line" aria-hidden="true">
-        <span />
-      </div>
-      <button className="text-link" onClick={close}>
-        Skip intro
-      </button>
-    </Modal>
   );
 }

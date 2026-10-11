@@ -18,7 +18,7 @@ Vite serves the app on port 5173 by default. `npm run build` creates the deploya
 - Blue-and-white illustrated layout based on the supplied reference, with the supplied transparent illustrations.
 - Three cinematic hero slides with animated typography, scene reveals, slide progress, previous/next controls, keyboard navigation and touch swipes. Autoplay pauses for hover, focus, hidden tabs and offscreen content; manual selection stops it until resumed. Reduced motion and the site-wide pause disable autoplay.
 - Nine-service flow menu with context-matched uploaded artwork, hover previews, keyboard selection and touch controls. Full-screen navigation also has five distinct illustrated destinations and native dialog focus management.
-- A short skippable first-visit intro, pointer-responsive CSS 3D brand cube, scroll-triggered reveals, desktop service stacking and a full-width four-scene GSAP cinematic story.
+- A resource-aware 2.8-second cinematic logo ident, pointer-responsive CSS 3D brand cube, scroll-triggered reveals, desktop service stacking and a full-width four-scene GSAP cinematic story.
 - Four detailed service groups with capabilities, deliverables and audience guidance, plus studio content and FAQs.
 - An illustrated studio exploration section with direct navigation from the header and hero.
 - Validated project brief builder with downloadable text and clipboard support.
@@ -47,7 +47,7 @@ To override the recipient, copy `.env.example` to `.env.local` and set `VITE_CON
 - `src/components/HeroSlides.jsx` contains hero content and carousel behavior; `src/hero-slides.css` styles its responsive layout.
 - `src/components/ServiceScene.jsx` maps the eight uploaded PNG illustrations to each section using responsive WebP assets. See [artwork provenance and placement](docs/illustrations.md).
 - `src/components/ServiceFlow.jsx` contains all nine offerings and the preview/selection logic. Hover previews are temporary; keyboard focus and touch/click commit selection.
-- `src/components/BrandCube.jsx` contains the six-face CSS 3D cube and 2.1-second, once-per-session cinematic intro with a 0.35-second exit. Reduced-motion users skip the intro; storage failure leaves the site immediately usable.
+- `src/components/BrandCube.jsx` contains the hero’s six-face CSS 3D cube. `src/components/LogoIntro.jsx` and `src/logo-intro.css` implement the 2.8-second, once-per-tab GSAP logo ident using the unchanged `/m2-mark.svg` asset. It starts when the actual logo, fonts and initial page resources are ready; Skip/Escape dismiss it immediately. Reduced motion, asset failure and unavailable session storage leave the homepage usable. See [logo intro](docs/logo-intro.md).
 - `src/components/ScrollStory.jsx` renders the live four-scene cinematic stage. `src/cinematic-story.css` scopes its dark-to-light visuals; GSAP and ScrollTrigger load on demand, pin on desktop, and use CSS sticky scrolling on mobile. Reduced motion and animation pause show all scenes without pinning. Three.js is used only by the artwork generator, not the live page.
 - Project art is original procedural work from `src/artwork.js`; it can be regenerated while the dev server is running with `node scripts/generate-art.mjs`.
 - No customer metrics or testimonials have been invented.

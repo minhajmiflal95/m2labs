@@ -707,3 +707,122 @@ test("glyph portal remains readable without motion or canvas measurement", async
     await context.close();
   }
 });
+
+test("logo ident waits for actual logo readiness and reveals the mounted homepage", async ({
+  browser,
+}) => {
+  for (const width of [1440, 375]) {
+    const context = await browser.newContext({
+      viewport: { width, height: 900 },
+      reducedMotion: "no-preference",
+    });
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    let release;
+    const held = new Promise((resolve) => {
+      release = resolve;
+    });
+    await page.route("**/m2-mark.svg", async (route) => {
+      await held;
+      await route.continue();
+    });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    const intro = page.getByRole("dialog", { name: "Welcome to M² Labs" });
+    const stage = page.locator(".ident-stage");
+    await expect(intro).toBeVisible();
+    await expect(page.locator("#main")).toHaveCount(1);
+    await expect(stage).toHaveAttribute("data-intro-state", "waiting");
+    await page.waitForTimeout(3000);
+    await expect(intro).toBeVisible();
+    await expect(stage).toHaveAttribute("data-intro-state", "waiting");
+    release();
+    await expect(stage).toHaveAttribute("data-intro-state", "playing");
+    await expect(page.locator(".ident-original")).toHaveAttribute(
+      "src",
+      "/m2-mark.svg",
+    );
+    await expect
+      .poll(() =>
+        page
+          .locator(".ident-original")
+          .evaluate((img) => img.complete && img.naturalWidth > 0),
+      )
+      .toBe(true);
+    await expect(stage).toHaveAttribute(
+      "data-intro-phase",
+      "sculpted-identity",
+    );
+    await page.screenshot({ path: `/tmp/m2-ident-${width}-sculpted.png` });
+    await expect(stage).toHaveAttribute("data-intro-phase", "signature-impact");
+    await expect
+      .poll(
+        () =>
+          page
+            .locator(".ident-character")
+            .last()
+            .evaluate((el) => Number(getComputedStyle(el).opacity)),
+        { intervals: [25, 50] },
+      )
+      .toBeGreaterThan(0.98);
+    await expect
+      .poll(
+        () =>
+          page
+            .locator(".ident-character")
+            .last()
+            .evaluate(
+              (el) =>
+                el.getBoundingClientRect().top -
+                el.parentElement.getBoundingClientRect().top,
+            ),
+        { intervals: [25, 50] },
+      )
+      .toBeLessThan(1);
+    await page.screenshot({ path: `/tmp/m2-ident-${width}-signature.png` });
+    const size = await page.locator(".ident-original").evaluate((img) => ({
+      width: img.offsetWidth,
+      height: img.offsetHeight,
+    }));
+    expect(size.width / size.height).toBeCloseTo(400 / 310, 2);
+    await expect(stage).toHaveAttribute(
+      "data-intro-phase",
+      "portal-transition",
+    );
+    await expect(intro).toHaveCount(0, { timeout: 2000 });
+    expect(await page.evaluate(() => document.body.style.overflow)).not.toBe(
+      "hidden",
+    );
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await page.reload();
+    await expect(intro).toHaveCount(0);
+    expect(errors).toEqual([]);
+    await context.close();
+  }
+});
+
+test("logo ident supports Escape, failed assets and changing motion preferences", async ({
+  browser,
+}) => {
+  for (const action of ["escape", "asset-failure", "reduce"]) {
+    const context = await browser.newContext({
+      reducedMotion: "no-preference",
+    });
+    const page = await context.newPage();
+    if (action === "asset-failure")
+      await page.route("**/m2-mark.svg", (route) => route.abort());
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    const intro = page.getByRole("dialog", { name: "Welcome to M² Labs" });
+    if (action !== "asset-failure") {
+      await expect(intro).toBeVisible();
+      if (action === "escape") await page.keyboard.press("Escape");
+      else await page.emulateMedia({ reducedMotion: "reduce" });
+    }
+    await expect(intro).toHaveCount(0);
+    expect(await page.evaluate(() => document.body.style.overflow)).not.toBe(
+      "hidden",
+    );
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await context.close();
+  }
+});

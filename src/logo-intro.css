@@ -1,0 +1,256 @@
+/* Every lighting layer masks the existing logo, without recreating its geometry. */
+.modal.logo-intro {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #e7edf6;
+  animation: none;
+  overflow: hidden;
+}
+.logo-intro::backdrop {
+  background: transparent;
+  backdrop-filter: none;
+}
+.logo-intro .modal-body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  display: block;
+  background: transparent;
+}
+.modal.logo-intro .modal-close {
+  position: absolute;
+  top: max(20px, env(safe-area-inset-top));
+  right: max(20px, env(safe-area-inset-right));
+  z-index: 5;
+  color: #bbc7d8;
+  background: #11141d;
+  box-shadow: none;
+  border: 1px solid #6a73874d;
+}
+.modal.logo-intro .modal-close:hover {
+  color: #fff;
+  background: #202635;
+}
+.modal.logo-intro .modal-close:focus-visible,
+.ident-skip:focus-visible {
+  outline: 2px solid #aacce2;
+  outline-offset: 4px;
+}
+.ident-stage {
+  position: absolute;
+  inset: 0;
+  perspective: 1400px;
+  isolation: isolate;
+}
+.ident-curtain {
+  position: absolute;
+  inset: 0;
+  background: #030408;
+  --portal-radius: -1%;
+  mask-image: radial-gradient(
+    circle at 50% 44%,
+    transparent var(--portal-radius),
+    #000 calc(var(--portal-radius) + 0.5%)
+  );
+}
+.ident-atmosphere {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 48% 40%,
+    #37344338 0%,
+    #15334620 25%,
+    transparent 60%
+  );
+  opacity: 0;
+}
+.ident-composition {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  perspective: 1400px;
+  padding: 60px 20px 100px;
+}
+.ident-camera {
+  width: min(62vw, 480px);
+  transform-style: preserve-3d;
+  will-change: transform, filter;
+}
+.ident-logo {
+  width: 100%;
+  aspect-ratio: 400/310;
+  position: relative;
+  isolation: isolate;
+}
+.ident-original {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  filter: drop-shadow(0 8px 18px #000b);
+}
+.ident-logo-mask {
+  position: absolute;
+  inset: 0;
+  mask-image: url("/m2-mark.svg");
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+}
+.ident-rim {
+  background: linear-gradient(
+    125deg,
+    #a4a3ce,
+    #263143 27%,
+    #b5ddea 48%,
+    #25212e 72%,
+    #9494c1
+  );
+  opacity: 0;
+  filter: brightness(1.5);
+  transform: translate(1px, 1px);
+}
+.ident-metal {
+  opacity: 0;
+  background:
+    linear-gradient(
+      130deg,
+      #141922 5%,
+      #a9b5c2 17%,
+      #3a424d 27%,
+      #d8e4e9 44%,
+      #5b6574 49%,
+      #10161d 62%,
+      #a0aebb 80%,
+      #242932 94%
+    ),
+    repeating-linear-gradient(0deg, #ffffff08 0 1px, transparent 1px 3px);
+  background-blend-mode: screen;
+}
+.ident-light-mask {
+  overflow: hidden;
+}
+.ident-beam,
+.ident-reflection,
+.ident-specular {
+  position: absolute;
+  inset: -30% 0;
+  pointer-events: none;
+}
+.ident-beam {
+  opacity: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 48.7%,
+    #5c497655 49.3%,
+    #c5b7f0 49.9%,
+    #cabff533 50.15%,
+    transparent 50.7%
+  );
+}
+.ident-reflection {
+  background: linear-gradient(
+    105deg,
+    transparent 28%,
+    #e0f7ff44 46%,
+    #d9f6ff88 49%,
+    transparent 66%
+  );
+}
+.ident-specular {
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    #b8eaff33 47%,
+    #fff 50%,
+    #e5e0ff55 52%,
+    transparent 60%
+  );
+}
+.ident-silhouette {
+  background: #f3f8ff;
+  opacity: 0;
+}
+.ident-tagline {
+  margin: 38px 0 0;
+  font-family: Manrope, sans-serif;
+  font-weight: 400;
+  font-size: clamp(10px, 1.1vw, 14px);
+  letter-spacing: 0.13em;
+  color: #c8d1df;
+  text-align: center;
+}
+.ident-character-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.ident-character {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+}
+.ident-skip {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  min-height: 44px;
+  padding: 12px 20px;
+  background: transparent;
+  color: #c1c8d6;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  border-radius: 24px;
+}
+.ident-skip:hover {
+  background: #ffffff0b;
+  color: #fff;
+}
+@media (max-width: 600px) {
+  .ident-camera {
+    width: min(72vw, 360px);
+  }
+  .ident-tagline {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    margin-top: 30px;
+  }
+  .ident-composition {
+    padding-bottom: 90px;
+  }
+}
+@media (max-height: 500px) {
+  .ident-camera {
+    width: min(44vh, 300px);
+  }
+  .ident-tagline {
+    margin-top: 15px;
+  }
+  .ident-composition {
+    padding: 35px 20px 55px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ident-camera,
+  .ident-character {
+    will-change: auto;
+    transition: none;
+  }
+}

@@ -24,7 +24,8 @@ import ServiceScene from "./components/ServiceScene.jsx";
 import ServiceFlow from "./components/ServiceFlow.jsx";
 import HeroSlides from "./components/HeroSlides.jsx";
 import LabsPortal from "./components/LabsPortal.tsx";
-import { BrandCube, WelcomeSplash } from "./components/BrandCube.jsx";
+import { BrandCube } from "./components/BrandCube.jsx";
+import LogoIntro from "./components/LogoIntro.jsx";
 
 import { services, contact, contactEmail, contactMap } from "./data.js";
 import { serviceDetails, faqs, audiences } from "./editorial.js";
@@ -531,7 +532,7 @@ export default function App() {
   };
   return (
     <MotionPreference.Provider value={motionPaused}>
-      <WelcomeSplash />
+      <LogoIntro />
       <div className={`site ${motionPaused ? "motion-paused" : ""}`}>
         <a href="#main" className="skip-link">
           Skip to content

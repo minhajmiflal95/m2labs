@@ -13,6 +13,7 @@ import "./hero-slides.css";
 import "./neumorphic.css";
 import "./glyph-portal.css";
 import "./cinematic-story.css";
+import "./logo-intro.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
