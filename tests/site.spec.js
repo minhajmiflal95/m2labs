@@ -636,3 +636,82 @@ test("cinematic intro can be skipped immediately and is omitted for reduced moti
   ).toHaveCount(0);
   await reduced.close();
 });
+
+test("glyph portal selects letters and reveals its section through scroll", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    baseURL: "http://127.0.0.1:5173",
+    viewport: { width: 1440, height: 1000 },
+    reducedMotion: "no-preference",
+  });
+  const page = await context.newPage();
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.addInitScript(() => sessionStorage.setItem("m2-welcomed", "1"));
+  await page.goto("/");
+  const portal = page.locator(".labs-portal");
+  const top = await portal.evaluate(
+    (el) => el.getBoundingClientRect().top + scrollY,
+  );
+  await page.evaluate((top) => scrollTo({ top, behavior: "instant" }), top);
+  await expect(portal).toHaveAttribute("data-gp-ready", "true");
+  await expect(portal).toHaveAttribute("data-gp-motion", "on");
+  const radios = portal.getByRole("radio");
+  await radios.first().focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(radios.nth(1)).toBeFocused();
+  await expect(radios.nth(1)).toHaveAttribute("aria-checked", "true");
+  const initial = await portal
+    .locator("[data-gp-glyph]")
+    .getAttribute("transform");
+  const travel = await portal.evaluate(
+    (el) => parseFloat(el.style.getPropertyValue("--gp-height")) * 1.6,
+  );
+  await page.evaluate(
+    ({ top, travel }) =>
+      scrollTo({ top: top + travel * 0.95, behavior: "instant" }),
+    { top, travel },
+  );
+  await expect(portal).toHaveAttribute("data-gp-entered", "true");
+  await expect
+    .poll(() => portal.locator("[data-gp-glyph]").getAttribute("transform"))
+    .not.toBe(initial);
+  await expect(
+    portal.getByRole("link", { name: "Find your starting point" }),
+  ).toBeVisible();
+  expect(errors).toEqual([]);
+  await context.close();
+});
+
+test("glyph portal remains readable without motion or canvas measurement", async ({
+  browser,
+}) => {
+  for (const canvasBlocked of [false, true]) {
+    const context = await browser.newContext({
+      baseURL: "http://127.0.0.1:5173",
+      viewport: { width: 390, height: 844 },
+      reducedMotion: "reduce",
+    });
+    const page = await context.newPage();
+    if (canvasBlocked)
+      await page.addInitScript(() => {
+        HTMLCanvasElement.prototype.getContext = () => null;
+      });
+    await page.goto("/");
+    const portal = page.locator(".labs-portal");
+    await portal.scrollIntoViewIfNeeded();
+    await expect(
+      portal.getByRole("heading", { name: "Step into what’s possible." }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    if (canvasBlocked)
+      await expect(portal.locator("[data-gp-fallback]")).toBeVisible();
+    else await expect(portal).toHaveAttribute("data-gp-motion", "off");
+    await context.close();
+  }
+});

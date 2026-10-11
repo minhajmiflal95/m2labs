@@ -6,10 +6,12 @@ import "@fontsource/manrope/latin-600.css";
 import "@fontsource/dm-sans/latin-400.css";
 import "@fontsource/dm-sans/latin-500.css";
 import App from "./App.jsx";
+import "./tailwind.css";
 import "./styles.css";
 import "./illustrated.css";
 import "./hero-slides.css";
 import "./neumorphic.css";
+import "./glyph-portal.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>

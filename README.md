@@ -56,6 +56,7 @@ To override the recipient, copy `.env.example` to `.env.local` and set `VITE_CON
 
 ```sh
 npm test
+npm run typecheck
 npm run build
 ```
 
@@ -68,3 +69,7 @@ Browser tests use Playwright and Chromium (`/usr/bin/chromium` in this cloud env
 ## Deployment
 
 Deploy `dist/` to a static host after `npm run build`. No API keys, database or private credentials are needed. Set the public contact email at build time. The site has no external analytics or tracking integrations.
+
+## Glyph Portal
+
+The scroll-through-type section between the hero and services uses the supplied MIT Glyph Portal component. TypeScript, Tailwind v4 and shadcn-compatible aliases are configured. Reusable components live in `src/components/ui`, available as `@/components/ui`. See [integration and setup instructions](docs/glyph-portal.md).

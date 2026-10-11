@@ -23,6 +23,7 @@ import ScrollStory from "./components/ScrollStory.jsx";
 import ServiceScene from "./components/ServiceScene.jsx";
 import ServiceFlow from "./components/ServiceFlow.jsx";
 import HeroSlides from "./components/HeroSlides.jsx";
+import LabsPortal from "./components/LabsPortal.tsx";
 import { BrandCube, WelcomeSplash } from "./components/BrandCube.jsx";
 
 import {
@@ -644,6 +645,7 @@ export default function App() {
         </header>
         <main id="main">
           <Hero startProject={() => startProject()} />
+          <LabsPortal />
           <ServiceFlow startProject={startProject} />
           <Services startProject={startProject} />
           <ProcessOverview />

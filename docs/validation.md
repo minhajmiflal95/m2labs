@@ -1,5 +1,14 @@
 # Validation
 
+## Glyph Portal integration — 11 October 2026
+
+- TypeScript checking, the production build and all 25 browser checks passed across the existing suite and targeted portal tests.
+- Portal tests verify keyboard letter selection, actual scroll-driven camera movement and content reveal, mobile reduced motion and a readable fallback when canvas measurement is unavailable.
+- The existing site suite remains the regression check for responsive layouts, light/dark WCAG, navigation, forms, cinematic slides and intro recovery.
+- Added TypeScript, Tailwind v4 and shadcn-compatible structure without applying a global CSS reset.
+- Source attribution and reusable demo preserved; see [glyph-portal.md](glyph-portal.md).
+- Earlier Lighthouse results below were not rerun for this integration.
+
 ## Responsive themes and cinematic intro — 9 October 2026
 
 - Added a persistent header theme toggle, a complete neumorphic light material for surfaces and controls, and smooth colour/shadow transitions.
