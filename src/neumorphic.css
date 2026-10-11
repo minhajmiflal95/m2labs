@@ -37,9 +37,7 @@ input,
 textarea,
 select,
 .faq-item,
-.service-row,
-.project-art,
-.work-filters button {
+.service-row {
   transition:
     background-color 0.4s ease,
     color 0.3s ease,
@@ -83,7 +81,6 @@ select,
     .theme-toggle,
     .cinema-transport button,
     .flow-tab,
-    .work-filters button,
     .footer-settings button
   ) {
   background: var(--paper);
@@ -104,8 +101,7 @@ select,
     .theme-toggle,
     .icon-button,
     .cinema-transport button,
-    .flow-tab,
-    .work-filters button
+    .flow-tab
   ):hover {
   box-shadow:
     6px 6px 13px #c3cedd,
@@ -119,11 +115,9 @@ select,
     .theme-toggle,
     .icon-button,
     .cinema-transport button,
-    .flow-tab,
-    .work-filters button
+    .flow-tab
   ):active,
-[data-theme="light"] .flow-tab.is-active,
-[data-theme="light"] .work-filters button.active {
+[data-theme="light"] .flow-tab.is-active {
   box-shadow: var(--neo-in);
   transform: none;
   color: var(--accent);
@@ -177,12 +171,6 @@ select,
 [data-theme="light"] .menu-layout nav > a.menu-active {
   background: var(--paper);
   box-shadow: var(--neo-in);
-}
-[data-theme="light"] .project-art {
-  box-shadow: var(--neo-up);
-  padding: 8px;
-  background: var(--paper);
-  border-radius: 22px;
 }
 [data-theme="light"] .service-fit {
   box-shadow: var(--neo-in);
@@ -420,9 +408,6 @@ select,
   .cinema-pagination button {
     min-height: 44px;
   }
-  .work-filters button {
-    min-height: 44px;
-  }
   .footer-settings {
     flex-wrap: wrap;
   }
@@ -558,9 +543,7 @@ select,
   textarea,
   select,
   .faq-item,
-  .service-row,
-  .project-art,
-  .work-filters button {
+  .service-row {
     transition: none !important;
   }
   .cinematic-loading,

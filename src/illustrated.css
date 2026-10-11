@@ -586,21 +586,8 @@ h4 {
 .story-quiet .story-chapters {
   gap: 55px;
 }
-.work-section .project-art {
-  border-radius: 17px;
-}
 .project-info h3 {
   font-size: 22px;
-}
-.project-art img {
-  transition:
-    transform 0.8s var(--ease),
-    clip-path 0.8s var(--ease);
-  clip-path: ellipse(90% 85% at 50% 50%);
-}
-.project-art:hover img {
-  clip-path: ellipse(120% 110% at 50% 50%);
-  transform: scale(1.05);
 }
 .contact-section {
   padding-bottom: 50px;
@@ -1161,7 +1148,6 @@ h4 {
     scroll-behavior: auto;
   }
   .brand-cube,
-  .project-art img,
   .illustrated-card,
   .illustrated-card > .service-scene {
     transition: none !important;
@@ -1178,7 +1164,6 @@ h4 {
   }
 }
 .motion-paused .brand-cube,
-.motion-paused .project-art img,
 .motion-paused .illustrated-card,
 .motion-paused .illustrated-card > .service-scene {
   transition: none !important;

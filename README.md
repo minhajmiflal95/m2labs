@@ -18,9 +18,9 @@ Vite serves the app on port 5173 by default. `npm run build` creates the deploya
 - Blue-and-white illustrated layout based on the supplied reference, with the supplied transparent illustrations.
 - Three cinematic hero slides with animated typography, scene reveals, slide progress, previous/next controls, keyboard navigation and touch swipes. Autoplay pauses for hover, focus, hidden tabs and offscreen content; manual selection stops it until resumed. Reduced motion and the site-wide pause disable autoplay.
 - Nine-service flow menu with context-matched uploaded artwork, hover previews, keyboard selection and touch controls. Full-screen navigation also has five distinct illustrated destinations and native dialog focus management.
-- A short skippable first-visit intro, pointer-responsive CSS 3D brand cube, scroll-triggered reveals, project-image reveals, desktop service stacking and a pinned three-chapter SVG story.
+- A short skippable first-visit intro, pointer-responsive CSS 3D brand cube, scroll-triggered reveals, desktop service stacking and a pinned three-chapter SVG story.
 - Four detailed service groups with capabilities, deliverables and audience guidance, plus studio content and FAQs.
-- Filterable studio concepts with project detail dialogs. These are explicitly concept work, not client claims.
+- An illustrated studio exploration section with direct navigation from the header and hero.
 - Validated project brief builder with downloadable text and clipboard support.
 - Header light/dark toggle with saved preferences, a complete neumorphic light theme, smooth theme transitions, reduced-motion handling, animation pause, and a readable static scroll-story fallback.
 - Self-hosted fonts and original, locally rendered 3D concept artwork. Uploaded illustrations are served locally in three sizes with transparency preserved. No third-party image requests at runtime.
@@ -40,7 +40,7 @@ To override the recipient, copy `.env.example` to `.env.local` and set `VITE_CON
 ## Brand and content
 
 - `public/m2-mark.svg` is a vector adaptation of the supplied logo reference, not the original uploaded file. Replace it with the original approved asset when available.
-- Services, project content and the contact configuration are in `src/data.js`.
+- Services and the contact configuration are in `src/data.js`.
 - Landing-page sections are in `src/App.jsx`; expanded copy is in `src/editorial.js`; enquiry dialogs are in `src/components/Dialogs.jsx`.
 - `src/neumorphic.css` styles the light theme, mobile refinements and fullscreen cinematic intro.
 - Base styles and dialogs are in `src/styles.css`; the illustrated identity and responsive layouts are in `src/illustrated.css`.
@@ -50,7 +50,7 @@ To override the recipient, copy `.env.example` to `.env.local` and set `VITE_CON
 - `src/components/BrandCube.jsx` contains the six-face CSS 3D cube and 2.1-second, once-per-session cinematic intro with a 0.35-second exit. Reduced-motion users skip the intro; storage failure leaves the site immediately usable.
 - `src/components/ScrollStory.jsx` owns the scroll-linked SVG diagram. Three.js is used only by the artwork generator, not the live page.
 - Project art is original procedural work from `src/artwork.js`; it can be regenerated while the dev server is running with `node scripts/generate-art.mjs`.
-- Replace the two concept studies with verified client work before presenting them as a commercial portfolio. No customer metrics or testimonials have been invented.
+- No customer metrics or testimonials have been invented.
 
 ## Validation
 
@@ -62,7 +62,7 @@ npm run build
 
 Detailed results and production performance measurements are recorded in [docs/validation.md](docs/validation.md).
 
-Browser tests use Playwright and Chromium (`/usr/bin/chromium` in this cloud environment). Set `CHROMIUM_PATH` for a different executable. Tests cover navigation/focus, concept filters, brief validation and downloads, FAQ, themes, responsive layouts, reduced motion, scroll-linked diagram progression, flow-menu hover/focus/touch states, intro recovery and WCAG checks through axe-core.
+Browser tests use Playwright and Chromium (`/usr/bin/chromium` in this cloud environment). Set `CHROMIUM_PATH` for a different executable. Tests cover navigation/focus, brief validation and downloads, FAQ, themes, responsive layouts, reduced motion, scroll-linked diagram progression, flow-menu hover/focus/touch states, intro recovery and WCAG checks through axe-core.
 
 `node scripts/check-visuals.mjs` captures desktop and mobile screenshots in `/tmp` while the dev server runs. `npx prettier --write src scripts tests index.html *.js *.json README.md` formats the project.
 

@@ -17,7 +17,7 @@ import {
   MotionPreference,
   useQuietMotion,
 } from "./components/UI.jsx";
-import { Enquiry, ProjectDetails } from "./components/Dialogs.jsx";
+import { Enquiry } from "./components/Dialogs.jsx";
 import Modal from "./components/Modal.jsx";
 import ScrollStory from "./components/ScrollStory.jsx";
 import ServiceScene from "./components/ServiceScene.jsx";
@@ -26,13 +26,7 @@ import HeroSlides from "./components/HeroSlides.jsx";
 import LabsPortal from "./components/LabsPortal.tsx";
 import { BrandCube, WelcomeSplash } from "./components/BrandCube.jsx";
 
-import {
-  services,
-  projects,
-  contact,
-  contactEmail,
-  contactMap,
-} from "./data.js";
+import { services, contact, contactEmail, contactMap } from "./data.js";
 import { serviceDetails, faqs, audiences } from "./editorial.js";
 
 function Hero({ startProject }) {
@@ -163,9 +157,7 @@ function Services({ startProject }) {
     </section>
   );
 }
-function Explorations({ openProject }) {
-  const [filter, setFilter] = useState("All explorations");
-  const quiet = useQuietMotion();
+function Explorations() {
   return (
     <section className="work-section section-space shell" id="work">
       <Reveal className="split-heading">
@@ -181,74 +173,11 @@ function Explorations({ openProject }) {
         <div>
           <h2>Thinking, made visible.</h2>
           <p className="section-description">
-            Independent studies in digital experiences and connected products.
-            <br className="desktop-break" /> These are studio concepts, not
-            client commissions.
+            We explore digital experiences and connected products, turning early
+            ideas into thoughtful design and practical solutions.
           </p>
         </div>
       </Reveal>
-      <div
-        className="work-filters"
-        role="group"
-        aria-label="Filter explorations"
-      >
-        {["All explorations", "Web experiences", "Digital systems"].map(
-          (item) => (
-            <button
-              className={filter === item ? "active" : ""}
-              key={item}
-              aria-pressed={filter === item}
-              onClick={() => setFilter(item)}
-            >
-              {item}
-              {filter === item && <ArrowUpRight size={14} aria-hidden="true" />}
-            </button>
-          ),
-        )}
-      </div>
-      <div className="project-grid">
-        {projects
-          .filter((p) => filter === "All explorations" || filter === p.category)
-          .map((project) => (
-            <motion.article
-              key={project.id}
-              className="project-card"
-              initial={quiet ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <button
-                className={`project-art ${project.id}`}
-                onClick={() => openProject(project)}
-              >
-                <img
-                  src={project.image}
-                  alt=""
-                  width="1200"
-                  height="1000"
-                  loading="lazy"
-                />
-                <span className="project-art-name" aria-hidden="true">
-                  {project.id}
-                </span>
-                <span className="project-read">
-                  Explore {project.title} concept <ArrowUpRight size={19} />
-                </span>
-              </button>
-              <div className="project-caption">
-                <div>
-                  <h3>{project.title}</h3>
-                  <p>{project.summary}</p>
-                </div>
-                <span>
-                  {project.category}
-                  <br />
-                  Studio exploration
-                </span>
-              </div>
-            </motion.article>
-          ))}
-      </div>
     </section>
   );
 }
@@ -576,7 +505,6 @@ export default function App() {
   const [menu, setMenu] = useState(false),
     [enquiry, setEnquiry] = useState(false),
     [service, setService] = useState(""),
-    [project, setProject] = useState(null),
     [motionPaused, setMotionPaused] = useState(false);
   const [theme, setTheme] = useState(() => {
     try {
@@ -599,7 +527,6 @@ export default function App() {
   const startProject = (value = "") => {
     setService(typeof value === "string" ? value : "");
     setMenu(false);
-    setProject(null);
     setEnquiry(true);
   };
   return (
@@ -650,7 +577,7 @@ export default function App() {
           <Services startProject={startProject} />
           <ProcessOverview />
           <ScrollStory />
-          <Explorations openProject={setProject} />
+          <Explorations />
           <Studio />
           <TechnologyStrip />
           <Questions />
@@ -684,19 +611,6 @@ export default function App() {
       {enquiry && (
         <Enquiry initialService={service} onClose={() => setEnquiry(false)} />
       )}{" "}
-      {project && (
-        <ProjectDetails
-          project={project}
-          onClose={() => setProject(null)}
-          startProject={() =>
-            startProject(
-              project.category === "Digital systems"
-                ? "Connected operations"
-                : "Digital experiences",
-            )
-          }
-        />
-      )}
     </MotionPreference.Provider>
   );
 }

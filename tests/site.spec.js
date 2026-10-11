@@ -18,14 +18,14 @@ test("loads the studio, all service groups and local artwork without runtime err
     "Ideas to Impact.",
   );
   await expect(page.locator(".service-row")).toHaveCount(4);
-  await expect(page.locator(".project-card")).toHaveCount(2);
+  await expect(page.locator(".work-filters, .project-grid")).toHaveCount(0);
   await expect(page.locator("canvas")).toHaveCount(0);
   await expect(page.locator(".hero-image")).toBeVisible();
   await page.locator("#work").scrollIntoViewIfNeeded();
   await expect
     .poll(() =>
       page
-        .locator(".project-art img")
+        .locator("#work img.service-scene")
         .evaluateAll((images) =>
           images.every((image) => image.complete && image.naturalWidth > 0),
         ),
@@ -53,31 +53,6 @@ test("menu traps focus, navigates to a section, and closes with Escape", async (
   await menu.getByRole("link", { name: "Our services" }).click();
   await expect(menu).toHaveCount(0);
   await expect(page).toHaveURL(/#services$/);
-});
-
-test("filters concept work and opens accessible project details", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page
-    .getByRole("button", { name: "Digital systems", exact: true })
-    .click();
-  await expect(page.locator(".project-card")).toHaveCount(1);
-  await page
-    .getByRole("button", { name: /Explore Orbit workspace concept/ })
-    .click();
-  const dialog = page.getByRole("dialog", { name: "Orbit workspace concept" });
-  await expect(dialog).toBeVisible();
-  await expect(dialog).toContainText("CONCEPT ONLY");
-  await dialog
-    .getByRole("button", { name: "Create something like this" })
-    .click();
-  await expect(
-    page.getByRole("dialog", { name: "Start a project" }),
-  ).toBeVisible();
-  await expect(page.locator("select[name=service]")).toHaveValue(
-    "Connected operations",
-  );
 });
 
 test("enquiry validates fields, preserves editing, and downloads the actual brief", async ({

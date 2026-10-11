@@ -705,120 +705,6 @@ h1 {
   padding-top: 55px;
   border-top: 1px solid var(--line);
 }
-.work-filters {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-  margin-bottom: 30px;
-}
-.work-filters button {
-  font-size: 11px;
-  color: var(--muted);
-  padding: 9px 0;
-  border-bottom: 1px solid transparent;
-}
-.work-filters button.active {
-  color: var(--ink);
-  border-color: var(--ink);
-}
-.work-filters button:hover {
-  color: var(--accent);
-}
-.project-grid {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 40px;
-  align-items: start;
-}
-.project-card:nth-child(2) {
-  margin-top: 90px;
-}
-.project-art {
-  position: relative;
-  width: 100%;
-  height: 420px;
-  display: block;
-  overflow: hidden;
-  text-align: left;
-  background: var(--surface);
-  padding: 0;
-  isolation: isolate;
-}
-.project-art img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition:
-    transform 0.9s var(--ease),
-    filter 0.9s var(--ease);
-}
-.project-art.forma img {
-  object-position: 40% center;
-}
-.project-art.orbit img {
-  filter: saturate(0.1);
-}
-.project-art:hover img {
-  transform: scale(1.045);
-}
-.project-art.orbit:hover img {
-  filter: saturate(0.65);
-}
-.project-art-name {
-  position: absolute;
-  inset: 38% 0 auto;
-  text-align: center;
-  font-size: 72px;
-  font-family: "Manrope";
-  letter-spacing: -4px;
-  color: #273c2f;
-  pointer-events: none;
-}
-.project-art.orbit .project-art-name {
-  color: #fff;
-}
-.project-read {
-  position: absolute;
-  bottom: 18px;
-  left: 18px;
-  right: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  background: #f8f8f5;
-  padding: 15px 18px;
-  font-size: 11px;
-  color: #27342c;
-  transform: translateY(0);
-  transition: background 0.4s var(--ease);
-}
-.project-art:hover .project-read {
-  background: #e8efe7;
-}
-.project-caption {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 30px;
-  align-items: baseline;
-  margin-top: 23px;
-}
-.project-caption h3 {
-  font-size: 19px;
-  letter-spacing: -0.5px;
-  margin-bottom: 8px;
-}
-.project-caption p {
-  font-size: 12px;
-  color: var(--muted);
-  max-width: 300px;
-}
-.project-caption > span {
-  font-size: 9px;
-  line-height: 1.8;
-  color: var(--muted);
-  text-align: right;
-}
 .studio-section {
   padding-top: 90px;
 }
@@ -1460,18 +1346,6 @@ textarea {
     font-size: 8px;
     gap: 8px;
   }
-  .project-art {
-    height: 350px;
-  }
-  .project-grid {
-    gap: 27px;
-  }
-  .project-caption {
-    gap: 15px;
-  }
-  .project-caption > span {
-    font-size: 8px;
-  }
   .audience-layout {
     gap: 65px;
     grid-template-columns: 1fr 1.3fr;
@@ -1815,53 +1689,6 @@ textarea {
   }
   .work-section > .split-heading {
     padding-top: 35px;
-  }
-  .work-filters {
-    gap: 20px;
-    margin-bottom: 24px;
-  }
-  .work-filters button {
-    font-size: 9px;
-    line-height: 1.5;
-  }
-  .project-grid {
-    grid-template-columns: 1fr;
-    gap: 35px;
-  }
-  .project-card:nth-child(2) {
-    margin-top: 0;
-  }
-  .project-art {
-    height: 370px;
-  }
-  .project-art-name {
-    font-size: 67px;
-  }
-  .project-read {
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
-    padding: 12px 14px;
-    font-size: 10px;
-  }
-  .project-read svg {
-    width: 17px;
-  }
-  .project-caption {
-    margin-top: 17px;
-    gap: 18px;
-    grid-template-columns: 1fr auto;
-  }
-  .project-caption h3 {
-    font-size: 18px;
-  }
-  .project-caption p {
-    font-size: 11px;
-    max-width: 220px;
-    line-height: 1.7;
-  }
-  .project-caption > span {
-    font-size: 8px;
   }
   .studio-section {
     padding-top: 45px;
@@ -2218,18 +2045,6 @@ textarea {
   .contact-arrow svg {
     width: 27px;
   }
-  .work-filters {
-    gap: 16px;
-  }
-  .work-filters button {
-    font-size: 8px;
-  }
-  .project-art {
-    height: 325px;
-  }
-  .project-caption > span {
-    font-size: 7px;
-  }
   .hero-intro > p:first-of-type {
     font-size: 15px;
   }
@@ -2248,9 +2063,6 @@ textarea {
   .story-stage {
     position: relative;
     top: 0;
-  }
-  .project-art:hover img {
-    transform: none;
   }
 }
 .motion-paused *,
