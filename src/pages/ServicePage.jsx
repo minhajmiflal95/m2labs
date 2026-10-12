@@ -176,11 +176,13 @@ export function ProcessTimeline({ service }) {
               <Reveal as="li" key={title}>
                 <span className="process-step">0{i + 1}</span>
                 <h3>{title}</h3>
-                <p>{text}</p>
-                <details>
-                  <summary>How we scope this</summary>
-                  <p>{service.deliverables[0]}</p>
-                </details>
+                <div className="process-body">
+                  <p>{text}</p>
+                  <details>
+                    <summary>Step outcome</summary>
+                    <p>{service.processOutputs[i]}</p>
+                  </details>
+                </div>
               </Reveal>
             ))}
           </ol>

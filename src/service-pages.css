@@ -860,3 +860,41 @@ html {
 .site :is(section[id], h1[id], h2[id]) {
   scroll-margin-top: 0;
 }
+
+/* Shared vertical rhythm follows content instead of breakpoint-specific empty offsets. */
+.service-detail {
+  --service-space: clamp(40px, 5vw, 72px);
+  --service-gap: clamp(18px, 2.2vw, 30px);
+}
+.detail-hero {
+  padding-top: var(--service-space);
+  padding-bottom: calc(var(--service-space) * 0.65);
+}
+.breadcrumbs {
+  margin-bottom: var(--service-gap);
+}
+.detail-section {
+  padding-top: var(--service-space);
+  padding-bottom: calc(var(--service-space) * 0.45);
+}
+.detail-deliverables,
+.detail-capabilities,
+.detail-related {
+  gap: var(--service-gap);
+}
+.detail-hero-art {
+  min-width: 0;
+}
+.detail-actions > *,
+.detail-closing .button {
+  max-width: 100%;
+}
+@media (max-width: 500px) {
+  .detail-hero h1 {
+    font-size: clamp(32px, 8.6vw, 42px);
+    line-height: 1.1;
+  }
+  .detail-actions {
+    align-items: flex-start;
+  }
+}

@@ -824,3 +824,28 @@
     font-size: 6px;
   }
 }
+
+/* Keep workflow disclosures with their description, rather than in the number column. */
+.process-body {
+  min-width: 0;
+}
+.process-body details {
+  margin-top: 12px;
+}
+.process-body summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--service-strong);
+  cursor: pointer;
+  font-size: 12px;
+}
+.process-body details[open] p {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 800px) {
+  .process-body {
+    grid-column: 2;
+  }
+}

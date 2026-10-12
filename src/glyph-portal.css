@@ -40,8 +40,8 @@
   font-size: 12px;
 }
 .labs-portal [data-gp-touch-picker] {
-  top: auto;
-  bottom: 19%;
+  top: calc(var(--gp-word-bottom, 50%) + 72px);
+  bottom: auto;
 }
 .labs-portal [data-gp-select] {
   background: var(--paper);
@@ -135,6 +135,22 @@
     font-size: 13px;
   }
   .labs-portal [data-gp-touch-picker] {
-    bottom: 24%;
+    bottom: auto;
+  }
+}
+
+@media (max-height: 500px) {
+  .labs-portal .portal-eyebrow {
+    top: max(10%, calc(var(--site-header-height, 72px) + 12px));
+  }
+  .labs-portal .portal-support {
+    top: calc(var(--gp-word-bottom, 50%) + 12px);
+    font-size: 12px;
+  }
+  .labs-portal [data-gp-touch-picker] {
+    top: calc(var(--gp-word-bottom, 50%) + 48px);
+  }
+  .labs-portal [data-gp-hint] {
+    display: none;
   }
 }

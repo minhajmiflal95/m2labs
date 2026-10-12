@@ -58,6 +58,12 @@ export const servicePages = [
         "Document hosting, content updates and scoped upkeep so the website remains manageable after launch.",
       ],
     ],
+    processOutputs: [
+      "A prioritised page and content brief, with an agreed audience and enquiry journey.",
+      "Reviewed page prototypes and a reusable interface direction.",
+      "Responsive pages with the agreed editing and contact workflows connected.",
+      "A launch checklist and handover for content, hosting and scoped maintenance.",
+    ],
     process: [
       [
         "Discover",
@@ -181,6 +187,12 @@ export const servicePages = [
         "GitHub & release practices",
         "Keep changes reviewable, test representative workflows and document deployment and support responsibilities.",
       ],
+    ],
+    processOutputs: [
+      "An agreed workflow map, user roles and prioritised software scope.",
+      "Interface prototypes and an architecture plan covering APIs and data responsibilities.",
+      "A working application increment with reviewed code and documented integration points.",
+      "Test evidence, deployment instructions and a plan for ongoing support.",
     ],
     process: [
       [
@@ -316,6 +328,12 @@ export const servicePages = [
         "Plan meaningful events and consent-aware tracking, then interpret reports against defined business objectives.",
       ],
     ],
+    processOutputs: [
+      "An audience, channel and measurement brief based on the available account data.",
+      "Approved creative concepts, content priorities and a scoped campaign plan.",
+      "Configured campaigns or search improvements with agreed tracking and consent checks.",
+      "A review of available results and a prioritised next round of work.",
+    ],
     process: [
       [
         "Research",
@@ -432,6 +450,12 @@ export const servicePages = [
         "Cost optimization",
         "Review the services and usage information available, identify unnecessary spend and agree safe changes.",
       ],
+    ],
+    processOutputs: [
+      "An inventory of users, services, domains and access requirements.",
+      "A scoped cloud architecture with licensing, migration and backup responsibilities.",
+      "Configured services or a staged migration, checked against the agreed plan.",
+      "Access documentation, recovery guidance and a practical administrator handover.",
     ],
     process: [
       [
@@ -550,6 +574,12 @@ export const servicePages = [
         "Give actionable feedback and practise explaining decisions, results and limitations without ghostwriting.",
       ],
     ],
+    processOutputs: [
+      "A research question and learning plan aligned with your institution’s requirements.",
+      "A justified technical approach, dataset plan and achievable evaluation criteria.",
+      "Your own prototype, with mentoring around implementation, testing and interpretation.",
+      "Feedback on your project documentation, limitations and viva preparation.",
+    ],
     process: [
       [
         "Scope",
@@ -666,6 +696,12 @@ export const servicePages = [
         "Escalation & documentation",
         "Record the resolution, remaining limits and the hand-off needed for specialist or vendor investigation.",
       ],
+    ],
+    processOutputs: [
+      "A triaged ticket with symptoms, impact and escalation responsibilities recorded.",
+      "A documented diagnosis and agreed remediation or escalation plan.",
+      "Checked corrective work, with change and patching records where relevant.",
+      "Resolution notes, preventive recommendations and any remaining actions.",
     ],
     process: [
       [
@@ -787,6 +823,12 @@ export const servicePages = [
         "Reporting & handover",
         "Prepare useful data flows and document dependencies, operational checks and support responsibilities.",
       ],
+    ],
+    processOutputs: [
+      "A map of business workflows, data owners and systems to connect.",
+      "An integration design covering field mappings, permissions and error handling.",
+      "A tested connection or migration increment, with exceptions reviewed.",
+      "Reconciliation evidence, operating notes and an administrator handover.",
     ],
     process: [
       [
