@@ -56,6 +56,20 @@ h1:focus {
   --service-tone: #403823;
   --service-strong: #f5dc9e;
 }
+.header-inner {
+  position: relative;
+}
+.desktop-nav {
+  align-items: center;
+}
+.desktop-nav > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.desktop-nav .service-mega-menu a::after {
+  content: none;
+}
 .service-nav > button {
   display: flex;
   align-items: center;
@@ -71,10 +85,12 @@ h1:focus {
 }
 .service-mega-menu {
   position: absolute;
-  top: calc(100% - 4px);
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  width: min(1100px, 94vw);
+  width: min(1100px, calc(100vw - 32px));
+  max-height: calc(100dvh - var(--site-header-height, 87px) - 16px);
+  overflow-y: auto;
   padding: 30px;
   border: 1px solid var(--line);
   border-radius: 22px;
@@ -813,4 +829,34 @@ h1:focus {
   padding-top: 150px;
   color: var(--muted);
   font-size: 14px;
+}
+
+/* Let the page carry vertical scrolling; every service remains visible on touch screens. */
+@media (max-width: 800px) {
+  .flow-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+    scroll-snap-type: none;
+    padding-inline: 0;
+  }
+  .flow-tab {
+    min-width: 0;
+    gap: 7px;
+    white-space: normal;
+  }
+}
+@media (max-width: 560px) {
+  .flow-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .flow-tab {
+    padding: 7px 6px;
+  }
+}
+html {
+  scroll-padding-top: calc(var(--site-header-height, 87px) + 16px);
+}
+.site :is(section[id], h1[id], h2[id]) {
+  scroll-margin-top: 0;
 }

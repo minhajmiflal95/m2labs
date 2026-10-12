@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { homeServiceSlugs, serviceBySlug } from "../service-pages.js";
 import { AnimatePresence, motion } from "motion/react";
@@ -126,15 +126,6 @@ export default function ServiceFlow({ startProject }) {
   const [active, setActive] = useState(0),
     [preview, setPreview] = useState(null);
   const quiet = useQuietMotion();
-  const [horizontal, setHorizontal] = useState(
-    () => matchMedia("(max-width: 800px)").matches,
-  );
-  useEffect(() => {
-    const query = matchMedia("(max-width: 800px)");
-    const update = () => setHorizontal(query.matches);
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
   const shown = preview ?? active;
   const item = offerings[shown];
   const choose = (i) => {
@@ -166,7 +157,7 @@ export default function ServiceFlow({ startProject }) {
           className="flow-tabs"
           role="tablist"
           aria-label="Service flow menu"
-          aria-orientation={horizontal ? "horizontal" : "vertical"}
+          aria-orientation="vertical"
         >
           {offerings.map(([name], i) => (
             <button
@@ -175,9 +166,9 @@ export default function ServiceFlow({ startProject }) {
               id={`flow-tab-${i}`}
               role="tab"
               aria-controls="flow-panel"
-              aria-selected={active === i}
+              aria-selected={shown === i}
               tabIndex={active === i ? 0 : -1}
-              className={`flow-tab ${active === i ? "is-active" : ""} ${shown === i ? "is-preview" : ""}`}
+              className={`flow-tab ${shown === i ? "is-active" : ""} ${shown === i ? "is-preview" : ""}`}
               onPointerEnter={(e) => {
                 if (e.pointerType === "mouse") setPreview(i);
               }}
@@ -198,7 +189,7 @@ export default function ServiceFlow({ startProject }) {
           id="flow-panel"
           role="tabpanel"
           tabIndex={0}
-          aria-labelledby={`flow-tab-${active}`}
+          aria-labelledby={`flow-tab-${shown}`}
           data-scene={shown}
         >
           <AnimatePresence initial={false} mode="sync">

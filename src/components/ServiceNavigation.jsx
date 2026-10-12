@@ -39,7 +39,33 @@ export default function ServiceNavigation() {
   const button = useRef(null);
   const location = useLocation();
   const quiet = useQuietMotion();
-  useEffect(() => setOpen(false), [location.pathname]);
+  const closeTimer = useRef(null);
+  const hoverOpened = useRef(false);
+  const focusFrame = useRef(null);
+  const cancelClose = () => clearTimeout(closeTimer.current);
+  const close = () => {
+    cancelClose();
+    setOpen(false);
+  };
+  useEffect(() => {
+    cancelClose();
+    setOpen(false);
+  }, [location.key]);
+  useEffect(() => {
+    if (!open) hoverOpened.current = false;
+  }, [open]);
+  useEffect(() => {
+    const query = matchMedia("(max-width: 1100px)");
+    const resize = () => {
+      if (query.matches) setOpen(false);
+    };
+    query.addEventListener("change", resize);
+    return () => {
+      query.removeEventListener("change", resize);
+      cancelClose();
+      cancelAnimationFrame(focusFrame.current);
+    };
+  }, []);
   useEffect(() => {
     if (!open) return;
     const outside = (e) => {
@@ -52,19 +78,35 @@ export default function ServiceNavigation() {
     <div
       className="service-nav"
       ref={ref}
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") {
+          cancelClose();
+          if (!open) hoverOpened.current = true;
+          setOpen(true);
+        }
+      }}
+      onPointerLeave={(e) => {
+        if (
+          e.pointerType === "mouse" &&
+          !ref.current.contains(document.activeElement)
+        )
+          closeTimer.current = setTimeout(() => setOpen(false), 160);
+      }}
       onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget)) setOpen(false);
+        if (!e.currentTarget.contains(e.relatedTarget)) close();
       }}
       onKeyDown={(e) => {
         if (e.key === "Escape") {
-          setOpen(false);
+          e.preventDefault();
+          e.stopPropagation();
+          close();
           button.current.focus();
         }
         if (e.key === "ArrowDown" && e.target === button.current) {
           e.preventDefault();
           setOpen(true);
-          requestAnimationFrame(() =>
-            ref.current.querySelector(".service-menu-groups a")?.focus(),
+          focusFrame.current = requestAnimationFrame(() =>
+            ref.current?.querySelector(".service-menu-groups a")?.focus(),
           );
         }
       }}
@@ -76,7 +118,14 @@ export default function ServiceNavigation() {
         aria-current={
           location.pathname.startsWith("/services") ? "page" : undefined
         }
-        onClick={() => setOpen(!open)}
+        onClick={(e) => {
+          cancelClose();
+          // Confirm the initial hover opening; subsequent clicks toggle normally.
+          if (e.nativeEvent.pointerType === "mouse" && hoverOpened.current)
+            setOpen(true);
+          else setOpen((value) => !value);
+          hoverOpened.current = false;
+        }}
       >
         Services <CaretDown size={12} aria-hidden="true" />
       </button>
@@ -85,8 +134,8 @@ export default function ServiceNavigation() {
           <motion.div
             id="service-mega-menu"
             className="service-mega-menu"
-            initial={{ opacity: 0, y: quiet ? 0 : 8 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: quiet ? 0 : 0.2 }}
           >
