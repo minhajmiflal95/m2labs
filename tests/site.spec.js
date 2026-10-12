@@ -230,12 +230,14 @@ test("cinematic story attaches a reversible GSAP timeline on desktop and mobile"
     });
     await context.addInitScript(() => {
       localStorage.setItem("m2-theme", "light");
-      sessionStorage.setItem("m2-welcomed", "1");
     });
     const page = await context.newPage();
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("/");
+    await expect(
+      page.getByRole("dialog", { name: "Welcome to M² Labs" }),
+    ).toHaveCount(0);
     const track = page.locator(".odyssey-track");
     await expect(track).toHaveAttribute("data-scroll-trigger", "attached");
     await expect(track).toHaveAttribute("data-scroll-end", /\d/);
@@ -373,7 +375,7 @@ test("touch selection stays active and rapid switching settles without overflow"
   await context.close();
 });
 
-test("intro dismisses automatically, remembers the visit and the cube responds to a pointer", async ({
+test("intro replays on refresh, dismisses automatically and leaves the cube interactive", async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -385,10 +387,10 @@ test("intro dismisses automatically, remembers the visit and the cube responds t
   await expect(
     page.getByRole("dialog", { name: "Welcome to M² Labs" }),
   ).toHaveCount(0, { timeout: 5000 });
-  expect(await page.evaluate(() => sessionStorage.getItem("m2-welcomed"))).toBe(
-    "1",
-  );
   await page.reload();
+  await expect(
+    page.getByRole("dialog", { name: "Welcome to M² Labs" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("dialog", { name: "Welcome to M² Labs" }),
   ).toHaveCount(0);
@@ -449,8 +451,10 @@ test("hero autoplay advances and stops after manual selection", async ({
     reducedMotion: "no-preference",
   });
   const page = await context.newPage();
-  await page.addInitScript(() => sessionStorage.setItem("m2-welcomed", "1"));
   await page.goto("/");
+  await expect(
+    page.getByRole("dialog", { name: "Welcome to M² Labs" }),
+  ).toHaveCount(0);
   const hero = page.locator(".hero-cinema");
   await expect(hero).toHaveClass(/is-playing/);
   await expect(hero).toHaveAttribute("data-slide", "1", { timeout: 10000 });
@@ -640,8 +644,10 @@ test("glyph portal selects letters and reveals its section through scroll", asyn
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.addInitScript(() => sessionStorage.setItem("m2-welcomed", "1"));
   await page.goto("/");
+  await expect(
+    page.getByRole("dialog", { name: "Welcome to M² Labs" }),
+  ).toHaveCount(0);
   const portal = page.locator(".labs-portal");
   const top = await portal.evaluate(
     (el) => el.getBoundingClientRect().top + scrollY,
@@ -691,6 +697,9 @@ test("glyph portal remains readable without motion or canvas measurement", async
         HTMLCanvasElement.prototype.getContext = () => null;
       });
     await page.goto("/");
+    await expect(
+      page.getByRole("dialog", { name: "Welcome to M² Labs" }),
+    ).toHaveCount(0);
     const portal = page.locator(".labs-portal");
     await portal.scrollIntoViewIfNeeded();
     await expect(
@@ -795,6 +804,8 @@ test("logo ident waits for actual logo readiness and reveals the mounted homepag
     );
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await page.reload();
+    await expect(intro).toBeVisible();
+    await intro.getByRole("button", { name: "Skip intro" }).click();
     await expect(intro).toHaveCount(0);
     expect(errors).toEqual([]);
     await context.close();

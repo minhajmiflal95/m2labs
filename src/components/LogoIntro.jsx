@@ -8,24 +8,10 @@ export default function LogoIntro() {
   const quiet = useQuietMotion();
   const stage = useRef(null);
   const logo = useRef(null);
-  const [open, setOpen] = useState(() => {
-    try {
-      return (
-        !matchMedia("(prefers-reduced-motion: reduce)").matches &&
-        !sessionStorage.getItem("m2-welcomed")
-      );
-    } catch {
-      return false;
-    }
-  });
-  const close = useCallback(() => {
-    try {
-      sessionStorage.setItem("m2-welcomed", "1");
-    } catch {
-      /* Optional session memory. */
-    }
-    setOpen(false);
-  }, []);
+  const [open, setOpen] = useState(
+    () => !matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+  const close = useCallback(() => setOpen(false), []);
   useEffect(() => {
     if (quiet && open) close();
   }, [quiet, open, close]);
@@ -45,11 +31,6 @@ export default function LogoIntro() {
         if (cancelled) return;
         const root = stage.current;
         root.dataset.introState = "playing";
-        try {
-          sessionStorage.setItem("m2-welcomed", "1");
-        } catch {
-          /* Optional session memory. */
-        }
         context = gsap.context(() => {
           const timeline = gsap.timeline({ onComplete: close });
           const phase = (name) => {
