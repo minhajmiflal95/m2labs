@@ -39,15 +39,6 @@
   color: var(--accent);
   font-size: 12px;
 }
-.labs-portal [data-gp-touch-picker] {
-  top: calc(var(--gp-word-bottom, 50%) + 72px);
-  bottom: auto;
-}
-.labs-portal [data-gp-select] {
-  background: var(--paper);
-  color: var(--ink);
-  border-color: var(--line);
-}
 .labs-portal[data-gp-motion="off"] [data-gp-content] {
   min-height: 0;
   padding-block: 65px;
@@ -134,9 +125,6 @@
   .portal-story > p {
     font-size: 13px;
   }
-  .labs-portal [data-gp-touch-picker] {
-    bottom: auto;
-  }
 }
 
 @media (max-height: 500px) {
@@ -146,9 +134,6 @@
   .labs-portal .portal-support {
     top: calc(var(--gp-word-bottom, 50%) + 12px);
     font-size: 12px;
-  }
-  .labs-portal [data-gp-touch-picker] {
-    top: calc(var(--gp-word-bottom, 50%) + 48px);
   }
   .labs-portal [data-gp-hint] {
     display: none;

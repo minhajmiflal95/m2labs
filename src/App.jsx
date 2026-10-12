@@ -31,6 +31,8 @@ import ScrollStory from "./components/ScrollStory.jsx";
 import ServiceScene from "./components/ServiceScene.jsx";
 import ServiceFlow from "./components/ServiceFlow.jsx";
 import HeroSlides from "./components/HeroSlides.jsx";
+import SelectedWork from "./components/SelectedWork.jsx";
+import "./selected-work.css";
 import LabsPortal from "./components/LabsPortal.tsx";
 import { BrandCube } from "./components/BrandCube.jsx";
 import LogoIntro from "./components/LogoIntro.jsx";
@@ -187,30 +189,6 @@ function Services({ startProject }) {
           );
         })}
       </div>
-    </section>
-  );
-}
-function Explorations() {
-  return (
-    <section className="work-section section-space shell" id="work">
-      <Reveal className="split-heading">
-        <div>
-          <SectionLabel number="03">Notes from the lab</SectionLabel>
-          <ServiceScene kind={1} className="work-illustration" decorative />
-          <p className="section-aside">
-            A place to test ideas.
-            <br />
-            And look a little closer.
-          </p>
-        </div>
-        <div>
-          <h2>Thinking, made visible.</h2>
-          <p className="section-description">
-            We explore digital experiences and connected products, turning early
-            ideas into thoughtful design and practical solutions.
-          </p>
-        </div>
-      </Reveal>
     </section>
   );
 }
@@ -483,7 +461,7 @@ function Navigation({ close, startProject }) {
           {[
             ["Our services", "services"],
             ["Our approach", "approach"],
-            ["Explorations", "work"],
+            ["Selected Work", "work"],
             ["The studio", "studio"],
             ["Contact", "contact"],
           ].map(([title, id], i) => (
@@ -516,7 +494,7 @@ function Navigation({ close, startProject }) {
                   [
                     "Our services: a developer creating software",
                     "Our approach: connected planning and systems",
-                    "Explorations: a designer exploring layouts",
+                    "Selected Work: exploring practical project concepts",
                     "The studio: our creative team",
                     "Contact: making a new connection",
                   ][scene]
@@ -589,7 +567,7 @@ export default function App() {
               </Link>
               <ServiceNavigation />
               <Link to="/#approach">Process</Link>
-              <Link to="/#work">Work</Link>
+              <Link to="/#work">Selected Work</Link>
               <Link to="/#studio">About</Link>
             </nav>
             <div className="header-actions">
@@ -640,7 +618,7 @@ export default function App() {
                       <Services startProject={startProject} />
                       <ProcessOverview />
                       <ScrollStory />
-                      <Explorations />
+                      <SelectedWork startProject={startProject} />
                       <Studio />
                       <TechnologyStrip />
                       <Questions />

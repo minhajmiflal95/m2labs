@@ -633,7 +633,7 @@ test("cinematic intro can be skipped immediately and is omitted for reduced moti
   await reduced.close();
 });
 
-test("glyph portal selects letters and reveals its section through scroll", async ({
+test("glyph portal automatically reveals its section through scroll", async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -655,11 +655,7 @@ test("glyph portal selects letters and reveals its section through scroll", asyn
   await page.evaluate((top) => scrollTo({ top, behavior: "instant" }), top);
   await expect(portal).toHaveAttribute("data-gp-ready", "true");
   await expect(portal).toHaveAttribute("data-gp-motion", "on");
-  const radios = portal.getByRole("radio");
-  await radios.first().focus();
-  await page.keyboard.press("ArrowRight");
-  await expect(radios.nth(1)).toBeFocused();
-  await expect(radios.nth(1)).toHaveAttribute("aria-checked", "true");
+  await expect(portal.getByRole("radio")).toHaveCount(0);
   const initial = await portal
     .locator("[data-gp-glyph]")
     .getAttribute("transform");

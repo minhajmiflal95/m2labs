@@ -85,3 +85,11 @@ See [the current redesign, route list, modified files and verification](docs/21s
 Build before running `npm run preview`: the preview reads generated `dist/_redirects` to serve the same route-specific HTML as Netlify. Netlify continues to build with `npm run build` and publish `dist`, including the SPA fallback. Public deployment must be verified separately from a Git push.
 
 The 21st workflow initialized `.21st` context and ran local review. Remote component retrieval was blocked by authentication/network availability; the redesign uses the explicitly authorized original-component fallback.
+
+## Selected Work and brand icons
+
+The homepage's Selected Work section contains six explicitly illustrative briefs for Sri Lankan business and research contexts. Content lives in `src/selected-work.js`; `src/components/SelectedWork.jsx` provides the responsive cards and scoped detail dialogs. The portal retains its automatic camera reveal and primary story without entry-letter controls.
+
+Favicon assets are exported from `public/m2-mark.svg`. Run `node scripts/generate-favicons.mjs` to reproduce them with Playwright/Chromium and Python3/Pillow. Transparent SVG,16/32/48px PNG and multi-size ICO assets are committed, along with a180px Apple icon on an intentional light background. The SVG head URL is versioned to refresh the previous generic favicon. The application build uses the committed assets.
+
+See [implementation and verification](docs/selected-work-favicons.md).

@@ -2,7 +2,7 @@
 
 The supplied `GlyphPortal` is in `src/components/ui/glyph-portal.tsx`. Its Christian Katzmann copyright and MIT notice are retained. The supplied `SUBLIME` demo is in `src/components/ui/glyph-portal-demo.tsx` as an optional example. It requests the original Jakarta font when mounted, with a timed Arial fallback; the production M² Labs section does not mount that demo or request its font.
 
-The production wrapper, `src/components/LabsPortal.tsx`, appears between the cinematic hero and services. It uses `CREATE`, a local gradient scene, M² Labs copy, letter selection, and an entry link. No new stock image is required for the component's gradient scene. The existing uploaded illustrations remain throughout the site.
+The production wrapper, `src/components/LabsPortal.tsx`, appears between the cinematic hero and services. It uses `CREATE`, a local gradient scene, M² Labs copy, an automatic measured-ink camera path, and an entry link. The entry-letter chooser and direct letter controls have been removed from every breakpoint; native scrolling, the entry link and the reduced-motion reading layout expose the complete story. No new stock image is required for the component's gradient scene. The existing uploaded illustrations remain throughout the site.
 
 The original component measures glyph interiors with a detached 2D canvas. Its scroll callback and animation geometry are updated without React state. Listeners, animation frames and observers are cleaned up on unmount. Its props support words, a preferred letter, scroll travel, fonts, annotations, background/front compositions, content and a progress callback.
 

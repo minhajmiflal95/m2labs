@@ -16,7 +16,6 @@ export type GlyphPortalStyle = CSSProperties & {
 export type GlyphPortalProps = {
   word?: string;
   /** First matching character. Omit to choose the largest safe patch of ink. */ focusChar?: string;
-  /** Hover, tap, or use arrow keys to choose a letter before scrolling. */ interactive?: boolean;
   reducedMotion?: boolean;
   /** Decorative, inert, mounted once. Fill its parent with an image, video, or canvas. */ background?: ReactNode;
   /** Optional foreground composition for the opening frame, above the clipped scene. */ front?: ReactNode;
@@ -39,13 +38,6 @@ const smooth = (a: number, b: number, n: number) => {
 };
 const DEFAULT_FONT = '"Arial Black", "Arial", sans-serif';
 type Ink = { x: number; y: number; radius: number; index: number };
-type Letter = {
-  index: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
 /** Largest opaque square, in linear time. Unlike a stem guess, it works in O, S and Ø. */ function interior(
   context: CanvasRenderingContext2D,
   char: string,
@@ -111,7 +103,6 @@ function scrollParent(element: HTMLElement): HTMLElement | null {
 export default function GlyphPortal({
   word = "SUBLIME",
   focusChar,
-  interactive = true,
   reducedMotion = false,
   background,
   front,
@@ -133,12 +124,6 @@ export default function GlyphPortal({
     progressRef.current = onProgress;
   }, [onProgress]);
   const text = word.trim().normalize("NFC") || "SUBLIME";
-  let characterOffset = 0;
-  const characters = Array.from(text, (char) => {
-    const index = characterOffset;
-    characterOffset += char.length;
-    return { char, index };
-  });
   const length = Number.isFinite(scrollLength)
     ? clamp(scrollLength, 1, 8)
     : 2.4;
@@ -153,31 +138,6 @@ export default function GlyphPortal({
     const clip = section.querySelector<SVGClipPathElement>(`#${clipId}`)!;
     const glyph = section.querySelector<SVGTextElement>("[data-gp-glyph]")!;
     const marks = section.querySelector<SVGGElement>("[data-gp-marks]")!;
-    const choices = section.querySelector<HTMLElement>("[data-gp-choices]")!;
-    const buttons = Array.from(
-      choices.querySelectorAll<HTMLButtonElement>("button"),
-    );
-    const picker = section.querySelector<HTMLElement>(
-      "[data-gp-touch-picker]",
-    )!;
-    const pickerTrigger =
-      picker.querySelector<HTMLButtonElement>("[data-gp-select]")!;
-    const pickerPanel = picker.querySelector<HTMLElement>("[data-gp-options]")!;
-    const pickerOptions = Array.from(
-      pickerPanel.querySelectorAll<HTMLButtonElement>("[data-gp-option]"),
-    );
-    let pickerOpen = false;
-    let hoverBlocked = false;
-    let pickerFocusFrame = 0;
-    let previewAnimation: Animation | null = null;
-    const setPickerOpen = (open: boolean, restoreFocus = false) => {
-      pickerOpen = open;
-      picker.dataset.open = String(open);
-      pickerTrigger.setAttribute("aria-expanded", String(open));
-      if (restoreFocus) pickerTrigger.focus({ preventScroll: true });
-      pickerPanel.inert = !open;
-      pickerPanel.setAttribute("aria-hidden", String(!open));
-    };
     const root = scrollParent(section);
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const canvas = document.createElement("canvas");
@@ -198,9 +158,7 @@ export default function GlyphPortal({
     let center = { x: 0, y: 0 },
       target: Ink | null = null;
     let lastProgress = -1;
-    let candidates: Ink[] = [],
-      letters: Letter[] = [];
-    let choosing = false;
+    let candidates: Ink[] = [];
     let bounds = { x: 0, y: 0, width: 1, height: 1 };
     let fontDirty = true;
     /* Freeze an available face for this mount. Late font swaps move the ink under the camera. */ /* Preload custom faces before mounting; pending/failed faces use the supplied fallback stack. */ glyph.style.fontFamily =
@@ -247,17 +205,8 @@ export default function GlyphPortal({
         : -1;
       let offset = 0;
       candidates = [];
-      letters = [];
       for (const char of Array.from(text)) {
         context.font = `${font.fontWeight} 100px ${font.fontFamily}`;
-        const m = context.measureText(char);
-        letters.push({
-          index: offset,
-          x: advances[offset] - m.actualBoundingBoxLeft,
-          y: -m.actualBoundingBoxAscent,
-          width: m.actualBoundingBoxLeft + m.actualBoundingBoxRight,
-          height: m.actualBoundingBoxAscent + m.actualBoundingBoxDescent,
-        });
         const found = interior(context, char, scanFont);
         if (found)
           candidates.push({
@@ -277,7 +226,7 @@ export default function GlyphPortal({
         null;
       return true;
     };
-    const select = (next: Ink | null) => {
+    const updateTarget = (next: Ink | null) => {
       target = next;
       endScale = target
         ? Math.max(startScale, Math.hypot(W, H) / (target.radius * 1.35))
@@ -286,26 +235,6 @@ export default function GlyphPortal({
         ? Array.from(text.slice(target.index))[0]
         : "";
       section.dataset.gpFocusIndex = String(target?.index ?? -1);
-      for (const button of buttons) {
-        const selected = Number(button.dataset.gpLetter) === target?.index;
-        button.disabled = !candidates.some(
-          (candidate) => candidate.index === Number(button.dataset.gpLetter),
-        );
-        button.setAttribute("aria-checked", String(selected));
-        button.tabIndex = selected ? 0 : -1;
-      }
-      pickerTrigger.disabled = !target;
-      picker.querySelector("[data-gp-selection]")!.textContent = target
-        ? `${Array.from(text.slice(target.index))[0]} · letter ${characters.findIndex((c) => c.index === target!.index) + 1}`
-        : "Unavailable";
-      for (const option of pickerOptions) {
-        const index = Number(option.dataset.gpOption);
-        option.disabled = !candidates.some(
-          (candidate) => candidate.index === index,
-        );
-        option.setAttribute("aria-selected", String(index === target?.index));
-        option.tabIndex = index === target?.index ? 0 : -1;
-      }
       const u = 1 / startScale;
       const y = bounds.y + bounds.height + 25 * u;
       const x = bounds.x;
@@ -358,11 +287,6 @@ export default function GlyphPortal({
       );
       marks.setAttribute("transform", transform);
       marks.style.opacity = String(1 - smooth(0.015, 0.17, p));
-      choosing = interactive && ready && Boolean(target) && p < 0.04;
-      picker.inert = !choosing;
-      if (!choosing && pickerOpen) setPickerOpen(false);
-      choices.inert = !choosing;
-      section.dataset.gpChoosing = String(choosing);
       /* Drop the clip only after the camera has already filled the viewport with ink. */ field.style.clipPath =
         t >= 1 ? "none" : `url(#${clipId})`;
       section.style.setProperty(
@@ -414,20 +338,9 @@ export default function GlyphPortal({
         (W * 0.84) / bounds.width,
         wordHeight / bounds.height,
       );
-      /* The whole viewport fits inside measured ink, even with the small camera bank. */ select(
+      /* The whole viewport fits inside measured ink, even with the small camera bank. */ updateTarget(
         target,
       );
-      for (const button of buttons) {
-        const letter = letters.find(
-          (item) => item.index === Number(button.dataset.gpLetter),
-        )!;
-        Object.assign(button.style, {
-          left: `${W / 2 + (letter.x - center.x) * startScale}px`,
-          top: `${H * 0.46 + (letter.y - center.y) * startScale - Math.max(0, 44 - letter.height * startScale) / 2}px`,
-          width: `${Math.max(1, letter.width * startScale)}px`,
-          height: `${Math.max(44, letter.height * startScale)}px`,
-        });
-      }
       section.style.setProperty(
         "--gp-word-top",
         `${H * 0.46 - (bounds.height * startScale) / 2}px`,
@@ -468,154 +381,6 @@ export default function GlyphPortal({
       frame();
     };
     const scroll = () => schedule();
-    const choose = (event: Event) => {
-      if (!choosing || position() >= 0.04) return;
-      const button = (event.target as Element).closest<HTMLButtonElement>(
-        "[data-gp-letter]",
-      );
-      const next = candidates.find(
-        (candidate) => candidate.index === Number(button?.dataset.gpLetter),
-      );
-      if (!next || next === target) return;
-      select(next);
-      paint(position());
-    };
-    const navigate = (event: KeyboardEvent) => {
-      if (
-        !choosing ||
-        ![
-          "ArrowLeft",
-          "ArrowRight",
-          "ArrowUp",
-          "ArrowDown",
-          "Home",
-          "End",
-        ].includes(event.key)
-      )
-        return;
-      event.preventDefault();
-      const current = candidates.indexOf(target!);
-      const index =
-        event.key === "Home"
-          ? 0
-          : event.key === "End"
-            ? candidates.length - 1
-            : (current +
-                (event.key === "ArrowLeft" || event.key === "ArrowUp"
-                  ? -1
-                  : 1) +
-                candidates.length) %
-              candidates.length;
-      buttons
-        .find(
-          (button) =>
-            Number(button.dataset.gpLetter) === candidates[index].index,
-        )
-        ?.focus({ preventScroll: true });
-    };
-    const pick = (event: Event) => {
-      const option = (event.target as Element).closest<HTMLButtonElement>(
-        "[data-gp-option]",
-      );
-      if (!option || !choosing) return;
-      const next = candidates.find(
-        (candidate) => candidate.index === Number(option.dataset.gpOption),
-      );
-      if (!next) return;
-      hoverBlocked = true;
-      select(next);
-      paint(position());
-      setPickerOpen(false, true);
-      previewAnimation?.cancel();
-      if (!reducedMotion && !motion.matches)
-        previewAnimation = field.animate([{ opacity: 0.82 }, { opacity: 1 }], {
-          duration: 240,
-          easing: "ease-out",
-        });
-    };
-    const togglePicker = () => {
-      if (!choosing) return;
-      setPickerOpen(!pickerOpen);
-    };
-    const pickerKeys = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && pickerOpen) {
-        event.preventDefault();
-        event.stopPropagation();
-        setPickerOpen(false, true);
-        return;
-      }
-      if (
-        ![
-          "ArrowDown",
-          "ArrowUp",
-          "ArrowLeft",
-          "ArrowRight",
-          "Home",
-          "End",
-        ].includes(event.key)
-      )
-        return;
-      event.preventDefault();
-      const wasOpen = pickerOpen;
-      setPickerOpen(true);
-      const enabled = pickerOptions.filter((option) => !option.disabled);
-      const selected = enabled.findIndex(
-        (option) => option.getAttribute("aria-selected") === "true",
-      );
-      const current = enabled.indexOf(
-        document.activeElement as HTMLButtonElement,
-      );
-      const step =
-        event.key === "ArrowUp"
-          ? -3
-          : event.key === "ArrowDown"
-            ? 3
-            : event.key === "ArrowLeft"
-              ? -1
-              : 1;
-      const index = !wasOpen
-        ? Math.max(0, selected)
-        : event.key === "Home"
-          ? 0
-          : event.key === "End"
-            ? enabled.length - 1
-            : (Math.max(0, current) + step + enabled.length) % enabled.length;
-      cancelAnimationFrame(pickerFocusFrame);
-      if (wasOpen) enabled[index]?.focus({ preventScroll: true });
-      else
-        pickerFocusFrame = requestAnimationFrame(() => {
-          if (pickerOpen) enabled[index]?.focus({ preventScroll: true });
-        });
-    };
-    const outsidePicker = (event: PointerEvent) => {
-      if (pickerOpen && !picker.contains(event.target as Node))
-        setPickerOpen(false);
-    };
-    const blurPicker = (event: FocusEvent) => {
-      if (!picker.contains(event.relatedTarget as Node)) setPickerOpen(false);
-    };
-    const hoverChoose = (event: PointerEvent) => {
-      if (event.pointerType === "mouse" && !hoverBlocked) choose(event);
-    };
-    const moveChoose = (event: PointerEvent) => {
-      if (
-        event.pointerType !== "mouse" ||
-        (!event.movementX && !event.movementY)
-      )
-        return;
-      hoverBlocked = false;
-      choose(event);
-    };
-    choices.addEventListener("pointerover", hoverChoose);
-    choices.addEventListener("pointermove", moveChoose);
-    choices.addEventListener("click", choose);
-    choices.addEventListener("focusin", choose);
-    choices.addEventListener("keydown", navigate);
-    pickerTrigger.addEventListener("click", togglePicker);
-    pickerPanel.addEventListener("click", pick);
-    picker.addEventListener("keydown", pickerKeys);
-    picker.addEventListener("focusout", blurPicker);
-    document.addEventListener("pointerdown", outsidePicker);
     const observer = new ResizeObserver(resize);
     observer.observe(section);
     if (root) observer.observe(root);
@@ -648,23 +413,10 @@ export default function GlyphPortal({
       window.removeEventListener("resize", resize);
       window.visualViewport?.removeEventListener("resize", resize);
       motion.removeEventListener("change", resize);
-      choices.removeEventListener("pointerover", hoverChoose);
-      choices.removeEventListener("pointermove", moveChoose);
-      cancelAnimationFrame(pickerFocusFrame);
-      choices.removeEventListener("click", choose);
-      choices.removeEventListener("focusin", choose);
-      choices.removeEventListener("keydown", navigate);
-      previewAnimation?.cancel();
-      pickerTrigger.removeEventListener("click", togglePicker);
-      pickerPanel.removeEventListener("click", pick);
-      picker.removeEventListener("keydown", pickerKeys);
-      picker.removeEventListener("focusout", blurPicker);
-      document.removeEventListener("pointerdown", outsidePicker);
     };
   }, [
     text,
     focusChar,
-    interactive,
     reducedMotion,
     fontFamily,
     weight,
@@ -687,19 +439,7 @@ export default function GlyphPortal({
       }
     >
       {" "}
-      <style>{`
-        ${q} [data-gp-touch-picker]{display:flex;z-index:3;width:min(280px,calc(100% - 32px));bottom:auto;top:calc(var(--gp-word-bottom,50%) + 72px);}
-        ${q} [data-gp-select]{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px;border-radius:12px;font:inherit;font-size:12px;line-height:1.4;padding:10px 14px;}
-        ${q} [data-gp-options]{position:absolute;bottom:calc(100% + 8px);left:0;right:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px;background:var(--gp-paper);border:1px solid currentColor;border-radius:14px;box-shadow:0 12px 32px #102b5026;opacity:0;visibility:hidden;transform:translateY(8px);pointer-events:none;transition:opacity .18s,transform .18s,visibility 0s .18s;}
-        ${q} [data-open=true] [data-gp-options]{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;transition:opacity .18s,transform .18s,visibility 0s;}
-        ${q} [data-gp-option]{min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;color:var(--gp-ink);background:var(--gp-paper);}
-        ${q} [data-gp-option][aria-selected=true],${q} [data-gp-option]:hover{background:var(--gp-ink);color:var(--gp-paper);}
-        ${q} [data-gp-option]:focus-visible{outline:2px solid var(--gp-ink);outline-offset:2px;}
-        ${q} [data-gp-option] span{font-size:10px;}
-        ${q} [data-gp-letter][aria-checked=true]{border-bottom:2px solid var(--gp-ink);}
-        @media(prefers-reduced-motion:reduce){${q} [data-gp-options]{transition:none;}}
-      `}</style>
-      <style>{` ${q}{--gp-paper:#fff;--gp-ink:#0c1212;--gp-field:#0b3b2a;--gp-foreground:#fbfbfa;position:relative;isolation:isolate;background:var(--gp-paper);color:var(--gp-ink);font-family:Arial,sans-serif;} ${q}>[data-gp-viewport]{position:absolute;inset:0 auto auto 0;height:100vh;height:100svh;width:0;pointer-events:none;visibility:hidden;} ${q} [data-gp-pin]{position:relative;height:var(--gp-height,100svh);overflow:clip;isolation:isolate;container-type:size;} ${q} [data-gp-field]{position:absolute;inset:0;background:var(--gp-field);opacity:0;pointer-events:none;} ${q}[data-gp-ready] [data-gp-field]{opacity:1;} ${q} [data-gp-art]{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;} ${q} [data-gp-marks]{fill:none;stroke:var(--gp-ink);opacity:.6;} ${q} [data-gp-choices]{position:absolute;inset:0;visibility:hidden;pointer-events:none;} ${q}[data-gp-choosing=true] [data-gp-choices]{visibility:visible;} ${q} [data-gp-letter]{box-sizing:border-box;position:absolute;border:0;padding:0;margin:0;background:transparent;cursor:pointer;pointer-events:auto;touch-action:pan-y;} ${q} [data-gp-letter]:disabled{pointer-events:none;} ${q} [data-gp-letter]:focus-visible{outline:2px solid var(--gp-field);outline-offset:5px;} ${q} [data-gp-touch-picker]{display:flex;position:absolute;top:calc(var(--gp-word-bottom,50%) + 42px);left:50%;transform:translateX(-50%);font:12px/1.4 Arial,sans-serif;align-items:center;gap:12px;visibility:hidden;} ${q}[data-gp-choosing=true] [data-gp-touch-picker]{visibility:visible;} ${q} [data-gp-select]{min-height:44px;min-width:90px;border:1px solid #d8deda;border-radius:4px;background:var(--gp-paper);color:var(--gp-ink);padding:0 10px;font:inherit;} ${q} [data-gp-select]:focus-visible{outline:2px solid var(--gp-field);outline-offset:4px;} @media(any-pointer:coarse){${q} [data-gp-touch-picker]{display:flex;}} ${q} [data-gp-fallback]{position:absolute;inset:0;display:none;place-items:center;font-size:min(calc(100cqw / var(--gp-characters)),38cqh);line-height:1;color:var(--gp-field);} ${q}:not([data-gp-ready]) [data-gp-fallback]{display:grid;} ${q}[data-gp-ready] [data-gp-fallback]{visibility:hidden;} ${q} [data-gp-caption]{position:absolute;inset:auto 8% 9%;display:flex;align-items:center;justify-content:space-between;gap:1rem;font:12px/1.4 Arial,sans-serif;opacity:var(--gp-caption,1);pointer-events:var(--gp-caption-hit,auto);} ${q} [data-gp-caption]{font-family:inherit;} ${q} [data-gp-front]{position:absolute;inset:0;opacity:var(--gp-caption,1);pointer-events:none;} ${q} [data-gp-front] a,${q} [data-gp-front] button{pointer-events:var(--gp-caption-hit,auto);} ${q} [data-gp-front]:focus-within{opacity:1;} ${q} [data-gp-hint]{max-width:30ch;color:var(--gp-ink);} ${q} [data-gp-enter]{display:inline-flex;align-items:center;gap:16px;min-height:44px;color:inherit;font:inherit;text-decoration:none;letter-spacing:inherit;} ${q} [data-gp-enter]:focus-visible{outline:2px solid currentColor;outline-offset:5px;} ${q} [data-gp-caption]:focus-within{opacity:1;pointer-events:auto;} ${q} [data-gp-enter]:focus-visible{background:var(--gp-paper);color:var(--gp-ink);padding:0 12px;margin:0 -12px;} ${q} [data-gp-content]{box-sizing:border-box;position:relative;min-height:var(--gp-height,100svh);padding:clamp(32px,7%,100px);display:grid;align-content:center;color:var(--gp-foreground);background:var(--gp-field);overflow-wrap:anywhere;} ${q}[data-gp-motion=on] [data-gp-pin]{position:sticky;top:0;} ${q}[data-gp-motion=off] [data-gp-hint]{display:none;} ${q}[data-gp-motion=on] [data-gp-content]{margin-top:calc((var(--gp-length) - 1) * var(--gp-height));background:transparent;opacity:var(--gp-reveal,0);pointer-events:none;} ${q}[data-gp-motion=on][data-gp-entered=true] [data-gp-content]{pointer-events:auto;} ${q}[data-gp-motion=on]:has([data-gp-content]:focus-within) [data-gp-field]{clip-path:none!important;} ${q}[data-gp-motion=on] [data-gp-content]:focus-within{opacity:1;pointer-events:auto;} ${q}:has([data-gp-content]:focus-within) [data-gp-caption],${q}:has([data-gp-content]:focus-within) [data-gp-marks]{opacity:0;} ${q} [data-gp-default-title]{color:inherit;font:400 clamp(32px,5vw,72px)/1.05 Georgia,serif;letter-spacing:-.035em;max-width:13ch;margin:0 0 24px;text-wrap:balance;} ${q} [data-gp-default-copy]{color:inherit;font:16px/1.6 Arial,sans-serif;max-width:36ch;margin:0;} @media(prefers-reduced-motion:reduce){${q} [data-gp-pin]{position:relative!important;} ${q} [data-gp-content]{margin-top:0!important;opacity:1!important;background:var(--gp-field)!important;min-height:0;padding-block:64px;} ${q} [data-gp-caption]{opacity:1!important;}} @media(prefers-reduced-motion:reduce){${q} [data-gp-hint]{display:none;}} `}</style>{" "}
+      <style>{` ${q}{--gp-paper:#fff;--gp-ink:#0c1212;--gp-field:#0b3b2a;--gp-foreground:#fbfbfa;position:relative;isolation:isolate;background:var(--gp-paper);color:var(--gp-ink);font-family:Arial,sans-serif;} ${q}>[data-gp-viewport]{position:absolute;inset:0 auto auto 0;height:100vh;height:100svh;width:0;pointer-events:none;visibility:hidden;} ${q} [data-gp-pin]{position:relative;height:var(--gp-height,100svh);overflow:clip;isolation:isolate;container-type:size;} ${q} [data-gp-field]{position:absolute;inset:0;background:var(--gp-field);opacity:0;pointer-events:none;} ${q}[data-gp-ready] [data-gp-field]{opacity:1;} ${q} [data-gp-art]{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;} ${q} [data-gp-marks]{fill:none;stroke:var(--gp-ink);opacity:.6;} ${q} [data-gp-fallback]{position:absolute;inset:0;display:none;place-items:center;font-size:min(calc(100cqw / var(--gp-characters)),38cqh);line-height:1;color:var(--gp-field);} ${q}:not([data-gp-ready]) [data-gp-fallback]{display:grid;} ${q}[data-gp-ready] [data-gp-fallback]{visibility:hidden;} ${q} [data-gp-caption]{position:absolute;inset:auto 8% 9%;display:flex;align-items:center;justify-content:space-between;gap:1rem;font:12px/1.4 Arial,sans-serif;opacity:var(--gp-caption,1);pointer-events:var(--gp-caption-hit,auto);} ${q} [data-gp-caption]{font-family:inherit;} ${q} [data-gp-front]{position:absolute;inset:0;opacity:var(--gp-caption,1);pointer-events:none;} ${q} [data-gp-front] a,${q} [data-gp-front] button{pointer-events:var(--gp-caption-hit,auto);} ${q} [data-gp-front]:focus-within{opacity:1;} ${q} [data-gp-hint]{max-width:30ch;color:var(--gp-ink);} ${q} [data-gp-enter]{display:inline-flex;align-items:center;gap:16px;min-height:44px;color:inherit;font:inherit;text-decoration:none;letter-spacing:inherit;} ${q} [data-gp-enter]:focus-visible{outline:2px solid currentColor;outline-offset:5px;} ${q} [data-gp-caption]:focus-within{opacity:1;pointer-events:auto;} ${q} [data-gp-enter]:focus-visible{background:var(--gp-paper);color:var(--gp-ink);padding:0 12px;margin:0 -12px;} ${q} [data-gp-content]{box-sizing:border-box;position:relative;min-height:var(--gp-height,100svh);padding:clamp(32px,7%,100px);display:grid;align-content:center;color:var(--gp-foreground);background:var(--gp-field);overflow-wrap:anywhere;} ${q}[data-gp-motion=on] [data-gp-pin]{position:sticky;top:0;} ${q}[data-gp-motion=off] [data-gp-hint]{display:none;} ${q}[data-gp-motion=on] [data-gp-content]{margin-top:calc((var(--gp-length) - 1) * var(--gp-height));background:transparent;opacity:var(--gp-reveal,0);pointer-events:none;} ${q}[data-gp-motion=on][data-gp-entered=true] [data-gp-content]{pointer-events:auto;} ${q}[data-gp-motion=on]:has([data-gp-content]:focus-within) [data-gp-field]{clip-path:none!important;} ${q}[data-gp-motion=on] [data-gp-content]:focus-within{opacity:1;pointer-events:auto;} ${q}:has([data-gp-content]:focus-within) [data-gp-caption],${q}:has([data-gp-content]:focus-within) [data-gp-marks]{opacity:0;} ${q} [data-gp-default-title]{color:inherit;font:400 clamp(32px,5vw,72px)/1.05 Georgia,serif;letter-spacing:-.035em;max-width:13ch;margin:0 0 24px;text-wrap:balance;} ${q} [data-gp-default-copy]{color:inherit;font:16px/1.6 Arial,sans-serif;max-width:36ch;margin:0;} @media(prefers-reduced-motion:reduce){${q} [data-gp-pin]{position:relative!important;} ${q} [data-gp-content]{margin-top:0!important;opacity:1!important;background:var(--gp-field)!important;min-height:0;padding-block:64px;} ${q} [data-gp-caption]{opacity:1!important;}} @media(prefers-reduced-motion:reduce){${q} [data-gp-hint]{display:none;}} `}</style>{" "}
       {/* JS reveals only measured geometry. The unmeasured poster is reserved for no-JS. */}{" "}
       <noscript>
         <style>{`${q} [data-gp-fallback]{display:grid}${q} [data-gp-hint]{display:none}`}</style>
@@ -752,60 +492,6 @@ export default function GlyphPortal({
             <path />
           </g>{" "}
         </svg>{" "}
-        <div
-          data-gp-choices
-          role="radiogroup"
-          aria-label="Choose the letter to enter through"
-          inert
-        >
-          {" "}
-          {characters.map(({ char, index }, i) => (
-            <button
-              type="button"
-              role="radio"
-              aria-checked="false"
-              tabIndex={-1}
-              data-gp-letter={index}
-              key={index}
-              aria-label={`${char}, letter ${i + 1} of ${characters.length}`}
-            />
-          ))}{" "}
-        </div>{" "}
-        <div data-gp-touch-picker data-open="false">
-          <button
-            type="button"
-            data-gp-select
-            aria-haspopup="listbox"
-            aria-expanded="false"
-            aria-controls={`${uid}-options`}
-          >
-            <span>Choose entry letter</span>
-            <strong data-gp-selection>Preparing…</strong>
-            <span aria-hidden="true">⌄</span>
-          </button>
-          <div
-            id={`${uid}-options`}
-            data-gp-options
-            role="listbox"
-            aria-label="Entry letter"
-            aria-hidden="true"
-            inert
-          >
-            {characters.map(({ char, index }, i) => (
-              <button
-                type="button"
-                role="option"
-                aria-selected="false"
-                data-gp-option={index}
-                key={index}
-                tabIndex={-1}
-              >
-                <strong>{char}</strong>
-                <span>0{i + 1}</span>
-              </button>
-            ))}
-          </div>
-        </div>
         {front && <div data-gp-front>{front}</div>}{" "}
         <span
           data-gp-fallback
@@ -817,11 +503,7 @@ export default function GlyphPortal({
         <div data-gp-caption>
           {" "}
           <span data-gp-hint aria-hidden="true">
-            {interactive
-              ? "Scroll to enter."
-              : annotations
-                ? "A passage through type"
-                : ""}
+            Scroll to enter.
           </span>{" "}
           <a data-gp-enter href={`#${uid}-content`}>
             {enterLabel}
