@@ -14,12 +14,24 @@ export default defineConfig({
           readFileSync(new URL("./dist/_redirects", import.meta.url), "utf8")
             .trim()
             .split("\n")
-            .map((line) => line.split(/\s+/).slice(0, 2)),
+            .map((line) => {
+              const [path, target, status] = line.split(/\s+/);
+              return [path, { target, status: Number(status) }];
+            }),
         );
         server.middlewares.use((request, response, next) => {
           const [path, query] = (request.url || "/").split("?");
           const target = rules.get(path.replace(/\/$/, ""));
-          if (target) request.url = target + (query ? `?${query}` : "");
+          if (target?.status === 301) {
+            response.statusCode = 301;
+            response.setHeader(
+              "Location",
+              target.target + (query ? `?${query}` : ""),
+            );
+            response.end();
+            return;
+          }
+          if (target) request.url = target.target + (query ? `?${query}` : "");
           next();
         });
       },

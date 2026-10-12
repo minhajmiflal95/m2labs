@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "project": {
+    "name": "m2-labs",
+    "productType": "Creative technology agency",
+    "stack": ["react", "shadcn", "tailwind-v4", "vite"]
+  },
+  "sources": {
+    "tokens": [],
+    "components": ["src/components/ui"],
+    "assets": ["public/images"],
+    "instructions": []
+  },
+  "design": {
+    "colorMode": "light and dark",
+    "colors": {},
+    "typography": {
+      "display": "Space Grotesk",
+      "body": "Manrope",
+      "labels": "IBM Plex Mono"
+    },
+    "spacing": {},
+    "radius": {},
+    "shadows": {},
+    "motion": {},
+    "density": "unknown"
+  },
+  "components": {
+    "installed": ["glyph-portal", "glyph-portal-demo"],
+    "preferredPrimitives": [],
+    "patterns": []
+  },
+  "constraints": {
+    "must": [
+      "Preserve the existing M\u00b2 Labs logo, intro and cinematic story",
+      "Use seven distinct service environments with local verified technology assets",
+      "Keep reduced motion, keyboard and mobile support"
+    ],
+    "avoid": [
+      "Invented metrics or vendor partnerships",
+      "Unconfirmed 24/7 support",
+      "Hosted generation without verified AI access"
+    ]
+  },
+  "decisions": [
+    {
+      "decision": "Original service environments using React, SVG and existing Motion primitives",
+      "reason": "21st CLI catalog search requires authentication; MCP tools are unavailable and endpoint is proxy-blocked. Local 21st review is available."
+    }
+  ],
+  "evidence": [
+    {
+      "fact": "components.installed",
+      "source": "src/components/ui"
+    },
+    {
+      "fact": "project.stack:react",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:shadcn",
+      "source": "components.json"
+    },
+    {
+      "fact": "project.stack:tailwind-v4",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:vite",
+      "source": "package.json"
+    }
+  ],
+  "generatedAt": "2026-10-12T05:42:12.914Z"
+}

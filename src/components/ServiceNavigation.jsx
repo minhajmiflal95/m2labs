@@ -93,7 +93,7 @@ export default function ServiceNavigation() {
             <div className="service-menu-intro">
               <span className="eyebrow">Find your starting point</span>
               <Link to="/services" onClick={() => setOpen(false)}>
-                Explore all 16 services <ArrowUpRight size={16} />
+                Explore all services <ArrowUpRight size={16} />
               </Link>
             </div>
             <ServiceLinks onNavigate={() => setOpen(false)} />

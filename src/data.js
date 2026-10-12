@@ -21,8 +21,8 @@ export const services = [
     description:
       "Less friction. More possibility. Connect your tools, simplify your day-to-day, and give your team the support to do their best work.",
     items: [
-      "Microsoft 365 integration",
-      "ERP integration",
+      "Cloud Computing Solutions",
+      "ERP & CRM integration",
       "IT support & troubleshooting",
       "Business workflow automation",
     ],

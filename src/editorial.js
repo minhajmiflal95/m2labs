@@ -16,7 +16,7 @@ export const serviceDetails = [
     title: "Systems & IT support",
     summary: "Bring your tools, your team and your work together.",
     detail:
-      "Disconnected systems create extra work. We help with Microsoft 365 setup and integration, ERP connections, practical automation and everyday IT problems. We assess the existing setup before recommending a change.",
+      "Disconnected systems create extra work. We help with cloud computing solutions, Microsoft 365 collaboration, ERP and CRM connections, practical automation and everyday IT problems. We assess the existing setup before recommending a change.",
     outcomes: [
       "A review of the current tools and requirements",
       "Integration planning and configuration",

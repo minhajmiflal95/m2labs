@@ -1,7 +1,10 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useLocation } from "react-router-dom";
 import { motion } from "motion/react";
 import { ArrowRight, ArrowUpRight, CheckCircle } from "@phosphor-icons/react";
 import ServiceScene from "../components/ServiceScene";
+import ServiceEnvironment from "../components/ServiceEnvironment";
+import { technologyCatalog, technologyAsset } from "../service-technologies";
+import { useState } from "react";
 import PageSEO from "../components/PageSEO";
 import { Action, Reveal, useQuietMotion } from "../components/UI";
 import {
@@ -9,6 +12,7 @@ import {
   servicePages,
   serviceGroups,
   technologyNames,
+  legacyServiceAliases,
 } from "../service-pages";
 
 export function ServiceHero({ service, onEnquire }) {
@@ -39,8 +43,34 @@ export function ServiceHero({ service, onEnquire }) {
           <motion.span variants={childReveal} className="eyebrow">
             {serviceGroups[service.group]} / {service.title}
           </motion.span>
-          <motion.h1 variants={childReveal} tabIndex={-1}>
-            {service.headline}
+          <motion.h1
+            aria-label={service.headline}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: quiet ? 0 : 0.025 },
+              },
+            }}
+            tabIndex={-1}
+          >
+            {service.headline.split(" ").map((word, index) => (
+              <span className="service-word-mask" key={index}>
+                <motion.span
+                  aria-hidden="true"
+                  variants={{
+                    hidden: { y: quiet ? 0 : 14, opacity: 0 },
+                    visible: {
+                      y: 0,
+                      opacity: 1,
+                      transition: { duration: quiet ? 0 : 0.25 },
+                    },
+                  }}
+                >
+                  {word}&nbsp;
+                </motion.span>
+              </span>
+            ))}
           </motion.h1>
           <motion.p variants={childReveal}>{service.description}</motion.p>
           <motion.div variants={childReveal} className="detail-actions">
@@ -63,16 +93,7 @@ export function ServiceHero({ service, onEnquire }) {
           animate={{ opacity: 1, scale: 1, clipPath: "inset(0 0 0% 0)" }}
           transition={{ duration: 0.5, delay: quiet ? 0 : 0.08 }}
         >
-          <div className="detail-art-orbit" />
-          <ServiceScene
-            kind={service.scene}
-            label={`${service.title}: ${service.group === 3 ? "guided learning and project collaboration" : service.group === 1 ? "connected technology and collaboration" : service.group === 2 ? "content, strategy and digital growth" : "design and development collaboration"}`}
-            priority
-          />
-          <div className="detail-art-note">
-            <span>Thoughtfully connected.</span>
-            <span>Built around you.</span>
-          </div>
+          <ServiceEnvironment service={service} />
         </motion.div>
       </div>
     </section>
@@ -127,6 +148,7 @@ export function CapabilityGrid({ service }) {
   );
 }
 export function ProcessTimeline({ service }) {
+  const quiet = useQuietMotion();
   return (
     <section className="detail-section detail-process-section">
       <div className="shell">
@@ -134,46 +156,117 @@ export function ProcessTimeline({ service }) {
           <span className="eyebrow">A clear way forward</span>
           <h2>How we work together.</h2>
         </Reveal>
-        <ol className="detail-process">
-          {service.process.map(([title, text], i) => (
-            <Reveal as="li" key={title}>
-              <span className="process-step">0{i + 1}</span>
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </Reveal>
-          ))}
-        </ol>
+        <div className="detail-process-layout">
+          <svg
+            className="detail-process-rail"
+            viewBox="0 0 64 520"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <motion.path
+              d="M24 38V434"
+              initial={quiet ? false : { pathLength: 0 }}
+              whileInView={{ pathLength: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: quiet ? 0 : 0.8 }}
+            />
+          </svg>
+          <ol className="detail-process">
+            {service.process.map(([title, text], i) => (
+              <Reveal as="li" key={title}>
+                <span className="process-step">0{i + 1}</span>
+                <h3>{title}</h3>
+                <p>{text}</p>
+                <details>
+                  <summary>How we scope this</summary>
+                  <p>{service.deliverables[0]}</p>
+                </details>
+              </Reveal>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   );
 }
 export function TechnologyStack({ service }) {
+  const [active, setActive] = useState(null);
+  const groups = [
+    ...new Set(
+      service.technologies.map((key) => technologyCatalog[key].category),
+    ),
+  ];
   return (
     <section className="detail-section shell">
       <Reveal className="detail-tools">
         <div>
-          <span className="eyebrow">Tools around the work</span>
-          <h2>Chosen for the task.</h2>
+          <span className="eyebrow">Relevant platforms, clearly grouped</span>
+          <h2>Technology with a purpose.</h2>
           <p>
-            We assess the project before selecting a tool. These technologies
-            are relevant to the service; the agreed scope determines what we
-            use.
+            Platform choice, access and licensing are assessed for the agreed
+            scope. Logos identify the tools; they do not imply vendor
+            partnerships.
+          </p>
+          <p>
+            Capabilities such as{" "}
+            {service.environment === "growth"
+              ? "PPC, SEO, content writing and branding"
+              : service.environment === "design"
+                ? "UI/UX, accessibility and website optimization"
+                : "planning, integration and practical guidance"}{" "}
+            are part of the work, not software products.
           </p>
         </div>
-        <ul>
-          {service.technologies.map((icon) => (
-            <li key={icon}>
-              <img
-                src={`/images/technologies/${icon}.svg`}
-                width={40}
-                height={40}
-                alt=""
-                loading="lazy"
-              />
-              <span>{technologyNames[icon]}</span>
-            </li>
+        <div className="technology-groups">
+          {groups.map((group) => (
+            <div className="technology-group" key={group}>
+              <h3>{group}</h3>
+              <ul>
+                {service.technologies
+                  .filter((key) => technologyCatalog[key].category === group)
+                  .map((key) => (
+                    <li
+                      className={`technology-tile ${active === key ? "is-expanded" : ""}`}
+                      key={key}
+                      data-technology={key}
+                    >
+                      <button
+                        onMouseEnter={() => setActive(key)}
+                        onMouseLeave={(event) => {
+                          if (document.activeElement !== event.currentTarget)
+                            setActive(null);
+                        }}
+                        onFocus={() => setActive(key)}
+                        onBlur={() => setActive(null)}
+                        onClick={() => setActive(active === key ? null : key)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Escape") setActive(null);
+                        }}
+                        aria-expanded={active === key}
+                        aria-describedby={`technology-${key}`}
+                      >
+                        <img
+                          src={technologyAsset(key)}
+                          alt=""
+                          width="34"
+                          height="34"
+                          loading="lazy"
+                        />
+                        <span>{technologyCatalog[key].name}</span>
+                      </button>
+                      <span
+                        id={`technology-${key}`}
+                        className="technology-description"
+                        role="tooltip"
+                      >
+                        {technologyCatalog[key].description}
+                      </span>
+                    </li>
+                  ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
       </Reveal>
     </section>
   );
@@ -277,8 +370,20 @@ export function ServiceCTA({ service, onEnquire }) {
 }
 export default function ServicePage({ startProject }) {
   const { slug } = useParams();
+  const location = useLocation();
   const service = serviceBySlug[slug];
   if (!service) return <NotFound />;
+  if (legacyServiceAliases[slug])
+    return (
+      <Navigate
+        to={{
+          pathname: service.path,
+          search: location.search,
+          hash: location.hash,
+        }}
+        replace
+      />
+    );
   const onEnquire = () => startProject(service.title);
   return (
     <div
@@ -332,7 +437,7 @@ export function ServiceDirectory({ startProject }) {
           <span>/</span>
           <span aria-current="page">Services</span>
         </nav>
-        <span className="eyebrow">Sixteen ways to move forward</span>
+        <span className="eyebrow">Seven ways to move forward</span>
         <h1 tabIndex={-1}>
           Good thinking.
           <br />

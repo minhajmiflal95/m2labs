@@ -78,8 +78,10 @@ Netlify builds with `npm run build` and publishes `dist`, as declared in `netlif
 
 ## Service pages
 
-`/services` lists all sixteen genuine services. Every service has a dedicated URL with original content, enquiries, FAQs, related services and route metadata. React Router keeps the shell, theme settings and cinematic intro mounted between page visits. Refresh still replays the intro; service navigation does not.
+`/services` lists seven consolidated primary services. All sixteen previous service URLs redirect to the relevant current page. Every primary page has substantial content, a distinct interactive environment, accurate technology assets, enquiries, FAQs and route metadata. React Router keeps the shell, theme settings and cinematic intro mounted between page visits. Refresh still replays the intro; service navigation does not.
 
-See [the complete route list, modified files and verification](docs/service-pages.md). Content lives in `src/service-pages.js`, reusable page components in `src/pages/ServicePage.jsx`, and styles in `src/service-pages.css`. Typography is Space Grotesk / Manrope / IBM Plex Mono, served locally. The desktop Services menu and mobile navigation expose the full directory.
+See [the current redesign, route list, modified files and verification](docs/21st-service-redesign.md). Content lives in `src/service-pages.js`, reusable page components in `src/pages/ServicePage.jsx`, and styles in `src/service-pages.css`. Typography is Space Grotesk / Manrope / IBM Plex Mono, served locally. The desktop Services menu and mobile navigation expose the full directory.
 
 Build before running `npm run preview`: the preview reads generated `dist/_redirects` to serve the same route-specific HTML as Netlify. Netlify continues to build with `npm run build` and publish `dist`, including the SPA fallback. Public deployment must be verified separately from a Git push.
+
+The 21st workflow initialized `.21st` context and ran local review. Remote component retrieval was blocked by authentication/network availability; the redesign uses the explicitly authorized original-component fallback.

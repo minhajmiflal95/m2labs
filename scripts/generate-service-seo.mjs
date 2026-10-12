@@ -1,5 +1,5 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { servicePages } from "../src/service-pages.js";
+import { servicePages, legacyServiceAliases } from "../src/service-pages.js";
 const origin = "https://m2lab.netlify.app";
 const template = await readFile("dist/index.html", "utf8");
 const escape = (value) =>
@@ -58,9 +58,18 @@ console.log(
 
 await writeFile(
   "dist/_redirects",
-  pages
-    .filter((page) => page.path !== "/")
-    .map((page) => `${page.path} ${page.path}/index.html 200`)
-    .join("\n") + "\n",
+  Object.entries(legacyServiceAliases)
+    .map(
+      ([oldSlug, newSlug]) => `/services/${oldSlug} /services/${newSlug} 301`,
+    )
+    .join("\n") +
+    "\n" +
+    pages
+      .filter((page) => page.path !== "/")
+      .map((page) => `${page.path} ${page.path}/index.html 200`)
+      .join("\n") +
+    "\n",
 );
-console.log("Generated 17 exact Netlify rewrites for route-specific HTML.");
+console.log(
+  `Generated ${pages.length - 1} exact HTML rewrites and ${Object.keys(legacyServiceAliases).length} legacy redirects.`,
+);

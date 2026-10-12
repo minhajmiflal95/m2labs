@@ -1,5 +1,7 @@
 # Multi-page services — 12 October 2026
 
+This report records the initial sixteen-page implementation. The later [seven-service redesign](21st-service-redesign.md) supersedes its active route inventory; all old URLs remain as compatibility redirects.
+
 ## Delivered routes
 
 The existing service inventory has sixteen items across `src/data.js` and the nine-service homepage flow. Each genuine item now has a dedicated React route, with tutoring and mentoring language for academic support. `/services` is the directory; `/` retains the original homepage and cinematic sections.

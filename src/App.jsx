@@ -6,7 +6,7 @@ import ServiceNavigation, {
 } from "./components/ServiceNavigation.jsx";
 import PageTransition from "./components/PageTransition.jsx";
 import PageSEO from "./components/PageSEO.jsx";
-import { serviceBySlug, serviceGroupSlugs } from "./service-pages.js";
+import { serviceBySlug, homeCapabilitySlugs } from "./service-pages.js";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowUpRight,
@@ -159,7 +159,9 @@ function Services({ startProject }) {
                         <Link
                           to={
                             serviceBySlug[
-                              serviceGroupSlugs[i][service.items.indexOf(item)]
+                              homeCapabilitySlugs[i][
+                                service.items.indexOf(item)
+                              ]
                             ].path
                           }
                         >
