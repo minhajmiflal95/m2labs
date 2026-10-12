@@ -343,7 +343,7 @@ test("flow menu supports focus, arrow keys, and selected enquiries", async ({
   await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
   await page.keyboard.press("End");
   await expect(tabs.nth(8)).toBeFocused();
-  await page.getByRole("button", { name: "Explore this service" }).click();
+  await page.getByRole("button", { name: "Discuss this service" }).click();
   await expect(page.locator("select[name=service]")).toHaveValue(
     "Your next breakthrough",
   );

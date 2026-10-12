@@ -1,4 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
+import { Link, Routes, Route, useLocation } from "react-router-dom";
+
+import ServiceNavigation, {
+  ServiceLinks,
+} from "./components/ServiceNavigation.jsx";
+import PageTransition from "./components/PageTransition.jsx";
+import PageSEO from "./components/PageSEO.jsx";
+import { serviceBySlug, serviceGroupSlugs } from "./service-pages.js";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowUpRight,
@@ -29,6 +37,18 @@ import LogoIntro from "./components/LogoIntro.jsx";
 
 import { services, contact, contactEmail, contactMap } from "./data.js";
 import { serviceDetails, faqs, audiences } from "./editorial.js";
+
+const ServicePage = lazy(() => import("./pages/ServicePage.jsx"));
+const ServiceDirectory = lazy(() =>
+  import("./pages/ServicePage.jsx").then((module) => ({
+    default: module.ServiceDirectory,
+  })),
+);
+const NotFound = lazy(() =>
+  import("./pages/ServicePage.jsx").then((module) => ({
+    default: module.NotFound,
+  })),
+);
 
 function Hero({ startProject }) {
   return (
@@ -135,7 +155,17 @@ function Services({ startProject }) {
                   <span className="eyebrow">Capabilities</span>
                   <ul>
                     {service.items.map((item) => (
-                      <li key={item}>{item}</li>
+                      <li key={item}>
+                        <Link
+                          to={
+                            serviceBySlug[
+                              serviceGroupSlugs[i][service.items.indexOf(item)]
+                            ].path
+                          }
+                        >
+                          {item}
+                        </Link>
+                      </li>
                     ))}
                   </ul>
                   <span className="eyebrow">A typical engagement includes</span>
@@ -455,8 +485,8 @@ function Navigation({ close, startProject }) {
             ["The studio", "studio"],
             ["Contact", "contact"],
           ].map(([title, id], i) => (
-            <a
-              href={`#${id}`}
+            <Link
+              to={`/#${id}`}
               onClick={close}
               key={id}
               onMouseEnter={() => setScene(i)}
@@ -466,7 +496,7 @@ function Navigation({ close, startProject }) {
               <span>0{i + 1}</span>
               {title}
               <ArrowUpRight weight="light" />
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="menu-contact">
@@ -499,10 +529,18 @@ function Navigation({ close, startProject }) {
           <span>{contact.locality}</span>
         </div>
       </div>
+      <section className="mobile-service-directory" aria-label="All services">
+        <h2>Explore our services</h2>
+        <ServiceLinks onNavigate={close} />
+        <Link to="/services" onClick={close}>
+          View the service directory <ArrowRight size={18} />
+        </Link>
+      </section>
     </Modal>
   );
 }
 export default function App() {
+  const location = useLocation();
   const [menu, setMenu] = useState(false),
     [enquiry, setEnquiry] = useState(false),
     [service, setService] = useState(""),
@@ -541,11 +579,16 @@ export default function App() {
           <div className="header-inner shell">
             <Logo />
             <nav className="desktop-nav" aria-label="Main navigation">
-              <a href="#home">Home</a>
-              <a href="#service-experience">Services</a>
-              <a href="#approach">Process</a>
-              <a href="#work">Work</a>
-              <a href="#studio">About</a>
+              <Link
+                to="/#home"
+                aria-current={location.pathname === "/" ? "page" : undefined}
+              >
+                Home
+              </Link>
+              <ServiceNavigation />
+              <Link to="/#approach">Process</Link>
+              <Link to="/#work">Work</Link>
+              <Link to="/#studio">About</Link>
             </nav>
             <div className="header-actions">
               <button
@@ -572,25 +615,57 @@ export default function App() {
           </div>
         </header>
         <main id="main">
-          <Hero startProject={() => startProject()} />
-          <LabsPortal />
-          <ServiceFlow startProject={startProject} />
-          <Services startProject={startProject} />
-          <ProcessOverview />
-          <ScrollStory />
-          <Explorations />
-          <Studio />
-          <TechnologyStrip />
-          <Questions />
-          <Contact startProject={() => startProject()} />
+          <Suspense
+            fallback={
+              <div className="shell route-pending" role="status">
+                Opening the page…
+              </div>
+            }
+          >
+            <PageTransition>
+              <Routes location={location}>
+                <Route
+                  path="/"
+                  element={
+                    <>
+                      <PageSEO
+                        title="Ideas, amplified."
+                        description="M² Labs brings design, development and digital strategy together. Websites, applications, IT support, Microsoft 365, ERP integration, marketing and academic project guidance."
+                      />
+                      <Hero startProject={() => startProject()} />
+                      <LabsPortal />
+                      <ServiceFlow startProject={startProject} />
+                      <Services startProject={startProject} />
+                      <ProcessOverview />
+                      <ScrollStory />
+                      <Explorations />
+                      <Studio />
+                      <TechnologyStrip />
+                      <Questions />
+                      <Contact startProject={() => startProject()} />
+                    </>
+                  }
+                />
+                <Route
+                  path="/services"
+                  element={<ServiceDirectory startProject={startProject} />}
+                />
+                <Route
+                  path="/services/:slug"
+                  element={<ServicePage startProject={startProject} />}
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </PageTransition>
+          </Suspense>
         </main>
         <footer className="footer shell">
           <div className="footer-top">
             <Logo />
             <p>Good thinking. Useful things.</p>
-            <a href="#home">
+            <Link to="/#home">
               Back to the beginning <ArrowUpRight size={15} />
-            </a>
+            </Link>
           </div>
           <div className="footer-bottom">
             <span>© {new Date().getFullYear()} M² Labs</span>

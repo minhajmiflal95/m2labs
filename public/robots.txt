@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://m2lab.netlify.app/sitemap.xml

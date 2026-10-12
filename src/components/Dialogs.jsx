@@ -3,6 +3,7 @@ import { Check, DownloadSimple, Copy, ArrowRight } from "@phosphor-icons/react";
 import Modal from "./Modal.jsx";
 import { Action } from "./UI.jsx";
 import { contactEmail } from "../data.js";
+import { servicePages } from "../service-pages.js";
 
 export function Enquiry({ onClose, initialService }) {
   const [form, setForm] = useState({
@@ -132,6 +133,11 @@ export function Enquiry({ onClose, initialService }) {
                 <option>Brands with momentum</option>
                 <option>Your next breakthrough</option>
                 <option>A bit of everything</option>
+                <optgroup label="Individual services">
+                  {servicePages.map((service) => (
+                    <option key={service.slug}>{service.title}</option>
+                  ))}
+                </optgroup>
               </select>
             </label>
             <label>

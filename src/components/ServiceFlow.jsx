@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { homeServiceSlugs, serviceBySlug } from "../service-pages.js";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
 import ServiceScene from "./ServiceScene.jsx";
@@ -222,9 +224,18 @@ export default function ServiceFlow({ startProject }) {
                     </li>
                   ))}
                 </ul>
-                <Action onClick={() => startProject(groups[item[4]])}>
-                  Explore this service
-                </Action>
+                <Link
+                  className="button"
+                  to={serviceBySlug[homeServiceSlugs[shown]].path}
+                >
+                  Explore this service <ArrowRight size={18} />
+                </Link>
+                <button
+                  className="flow-discuss"
+                  onClick={() => startProject(groups[item[4]])}
+                >
+                  Discuss this service
+                </button>
               </div>
               <div className="flow-art">
                 <ServiceScene kind={shown} />
@@ -247,24 +258,16 @@ export default function ServiceFlow({ startProject }) {
           End-to-end digital services to help you build, grow
           <br className="desktop-break" /> and succeed in the digital world.
         </p>
-        <a href="#services">
-          View capabilities <ArrowRight />
-        </a>
+        <Link to="/services">
+          View all services <ArrowRight />
+        </Link>
       </Reveal>
       <div className="illustrated-services">
         {offerings.map(([name, , , , group], i) => (
           <Reveal key={name} delay={(i % 3) * 0.04}>
-            <button
+            <Link
               className="illustrated-card"
-              onClick={() => {
-                choose(i);
-                document
-                  .getElementById("service-experience")
-                  .scrollIntoView({ behavior: quiet ? "instant" : "smooth" });
-                document
-                  .getElementById(`flow-tab-${i}`)
-                  ?.focus({ preventScroll: true });
-              }}
+              to={serviceBySlug[homeServiceSlugs[i]].path}
             >
               <div>
                 <span className="eyebrow">
@@ -295,7 +298,7 @@ export default function ServiceFlow({ startProject }) {
               <span className="card-arrow">
                 <ArrowRight size={17} />
               </span>
-            </button>
+            </Link>
           </Reveal>
         ))}
       </div>

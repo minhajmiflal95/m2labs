@@ -75,3 +75,11 @@ Deploy `dist/` to a static host after `npm run build`. No API keys, database or 
 The scroll-through-type section between the hero and services uses the supplied MIT Glyph Portal component. TypeScript, Tailwind v4 and shadcn-compatible aliases are configured. Reusable components live in `src/components/ui`, available as `@/components/ui`. See [integration and setup instructions](docs/glyph-portal.md).
 
 Netlify builds with `npm run build` and publishes `dist`, as declared in `netlify.toml`. See [cinematic story verification](docs/cinematic-story.md) for implementation and deployment checks.
+
+## Service pages
+
+`/services` lists all sixteen genuine services. Every service has a dedicated URL with original content, enquiries, FAQs, related services and route metadata. React Router keeps the shell, theme settings and cinematic intro mounted between page visits. Refresh still replays the intro; service navigation does not.
+
+See [the complete route list, modified files and verification](docs/service-pages.md). Content lives in `src/service-pages.js`, reusable page components in `src/pages/ServicePage.jsx`, and styles in `src/service-pages.css`. Typography is Space Grotesk / Manrope / IBM Plex Mono, served locally. The desktop Services menu and mobile navigation expose the full directory.
+
+Build before running `npm run preview`: the preview reads generated `dist/_redirects` to serve the same route-specific HTML as Netlify. Netlify continues to build with `npm run build` and publish `dist`, including the SPA fallback. Public deployment must be verified separately from a Git push.

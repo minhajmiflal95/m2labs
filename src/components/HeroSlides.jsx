@@ -124,7 +124,7 @@ export default function HeroSlides({ startProject }) {
             transition={{ duration: quiet ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
             <span className="hero-pill">{slide.pill}</span>
-            <h1>
+            <h1 tabIndex={-1}>
               {slide.title}
               <br />
               <span>{slide.accent}</span>
