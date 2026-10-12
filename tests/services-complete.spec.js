@@ -9,6 +9,11 @@ async function alignPortal(page) {
   );
   await page.evaluate((top) => scrollTo({ top, behavior: "instant" }), top);
   await expect(portal).toHaveAttribute("data-gp-ready", "true");
+  // Scroll paint runs on requestAnimationFrame; do not capture the previous
+  // viewport's completed camera transform as the new starting transform.
+  await expect
+    .poll(async () => Number(await portal.getAttribute("data-gp-progress")))
+    .toBeLessThanOrEqual(0.001);
   return {
     portal,
     top,

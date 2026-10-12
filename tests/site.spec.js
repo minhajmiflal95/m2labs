@@ -526,7 +526,13 @@ test("supplied artwork is mapped across sections and responsive images load", as
     "#questions",
     "#contact",
   ]) {
-    const art = page.locator(`${section} img.service-scene`).first();
+    const art = page
+      .locator(
+        section === "#work"
+          ? "#work .selected-work-art img"
+          : `${section} img.service-scene`,
+      )
+      .first();
     await art.scrollIntoViewIfNeeded();
     await expect(art).toBeVisible();
     await expect
@@ -534,7 +540,9 @@ test("supplied artwork is mapped across sections and responsive images load", as
       .toBe(true);
     await expect(art).toHaveAttribute(
       "srcset",
-      /480.webp 480w.*960.webp 960w.*1448.webp 1448w/,
+      section === "#work"
+        ? /-480.webp 480w.*-800.webp 800w.*\.webp 1448w/
+        : /480.webp 480w.*960.webp 960w.*1448.webp 1448w/,
     );
   }
 });

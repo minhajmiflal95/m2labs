@@ -2,10 +2,12 @@
 export const selectedWork = [
   {
     id: "retail-pos",
+    image: "/images/projects/retail-inventory-pos",
+    imageAlt:
+      "Illustrative retail stock dashboard, mobile POS terminal and barcode scanner.",
     category: "Business software",
     label: "Concept project",
     title: "Retail Inventory & POS",
-    scene: 0,
     service: "software-development",
     description:
       "A stock and sales platform concept for Sri Lankan retailers, connecting the counter, purchasing and everyday reporting.",
@@ -45,10 +47,12 @@ export const selectedWork = [
   },
   {
     id: "tourism-booking",
+    image: "/images/projects/tourism-booking",
+    imageAlt:
+      "Illustrative Sri Lankan hospitality booking website, mobile enquiry interface and travel destinations.",
     category: "Web experiences",
     label: "Concept project",
     title: "Tourism Booking Experience",
-    scene: 1,
     service: "web-development",
     description:
       "A mobile-first booking and enquiry journey for Sri Lankan guesthouses, boutique stays and hospitality businesses.",
@@ -78,10 +82,12 @@ export const selectedWork = [
   },
   {
     id: "sme-cloud",
+    image: "/images/projects/sme-cloud-infrastructure",
+    imageAlt:
+      "Illustrative cloud administration dashboard, Microsoft 365 workspace and device security management.",
     category: "Cloud & infrastructure",
     label: "Reference architecture",
     title: "SME Cloud & IT Infrastructure",
-    scene: 5,
     service: "cloud-computing",
     description:
       "A reference architecture for a growing Sri Lankan team, connecting productivity, identity, endpoints and recovery planning.",
@@ -117,10 +123,12 @@ export const selectedWork = [
   },
   {
     id: "gem-digital-growth",
+    image: "/images/projects/local-business-digital-growth",
+    imageAlt:
+      "Illustrative gemstone advertising, lead generation and analytics with a modern city background.",
     category: "Digital strategy",
     label: "Campaign concept",
     title: "Local Business Digital Growth",
-    scene: 4,
     service: "digital-marketing",
     description:
       "An illustrative growth strategy for a Sri Lankan gem business, combining credible storytelling, search discovery and qualified enquiries.",
@@ -157,10 +165,12 @@ export const selectedWork = [
   },
   {
     id: "erp-inventory",
+    image: "/images/projects/erp-inventory-integration",
+    imageAlt:
+      "Illustrative ERP dashboard, inventory synchronization and warehouse workflow.",
     category: "Connected operations",
     label: "Integration concept",
     title: "ERP Sales & Inventory Integration",
-    scene: 6,
     service: "erp-integration",
     description:
       "A sample workflow connecting sales orders, stock movements and reporting across a storefront and an ERP platform.",
@@ -190,10 +200,12 @@ export const selectedWork = [
   },
   {
     id: "research-ml",
+    image: "/images/projects/university-research-ml",
+    imageAlt:
+      "Illustrative machine learning research dashboard, prediction charts and mobile research portal.",
     category: "Research & learning",
     label: "Research concept",
     title: "University Research & ML Application",
-    scene: 8,
     service: "university-project-support",
     description:
       "A student-led final-year research concept pairing a machine-learning workflow, web dashboard and structured project documentation.",

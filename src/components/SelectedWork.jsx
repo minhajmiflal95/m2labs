@@ -4,8 +4,32 @@ import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react";
 import { selectedWork } from "../selected-work";
 import { serviceBySlug } from "../service-pages";
 import { Reveal, SectionLabel } from "./UI";
-import ServiceScene from "./ServiceScene";
 import Modal from "./Modal";
+
+function ProjectArtwork({ project, detail = false }) {
+  return (
+    <figure className={detail ? "work-detail-art" : "selected-work-art"}>
+      <img
+        src={`${project.image}.webp`}
+        srcSet={`${project.image}-480.webp 480w, ${project.image}-800.webp 800w, ${project.image}.webp 1448w`}
+        sizes={
+          detail
+            ? "(max-width: 820px) calc(100vw - 80px), 740px"
+            : "(max-width: 767px) calc(100vw - 48px), (max-width: 1440px) calc((100vw - 120px) / 2), 650px"
+        }
+        width="1448"
+        height="1086"
+        alt={project.imageAlt}
+        loading={detail ? "eager" : "lazy"}
+        decoding="async"
+      />
+      <figcaption>
+        AI-generated concept artwork. Names, dashboards and metrics are
+        illustrative.
+      </figcaption>
+    </figure>
+  );
+}
 
 export default function SelectedWork({ startProject }) {
   const [project, setProject] = useState(null);
@@ -39,10 +63,7 @@ export default function SelectedWork({ startProject }) {
             delay={(i % 2) * 0.05}
             as="article"
           >
-            <div className="selected-work-art" data-tone={i % 3}>
-              <ServiceScene kind={item.scene} decorative />
-              <span>{String(i + 1).padStart(2, "0")}</span>
-            </div>
+            <ProjectArtwork project={item} />
             <div className="selected-work-copy">
               <div className="selected-work-meta">
                 <span>{item.category}</span>
@@ -83,11 +104,7 @@ export default function SelectedWork({ startProject }) {
             An illustrative brief for exploring this solution. Client delivery
             and production results are not claimed.
           </p>
-          <ServiceScene
-            kind={project.scene}
-            decorative
-            className="work-detail-art"
-          />
+          <ProjectArtwork project={project} detail />
           <h3>The challenge</h3>
           <p>{project.challenge}</p>
           <h3>A proposed approach</h3>
